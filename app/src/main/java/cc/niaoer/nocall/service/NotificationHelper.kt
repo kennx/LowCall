@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -18,6 +19,7 @@ object NotificationHelper {
     const val CHANNEL_ID = "call_blocking"
     private const val CHANNEL_NAME = "来电拦截"
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun createChannel(context: Context) {
         val channel = NotificationChannel(
             CHANNEL_ID,
@@ -35,7 +37,9 @@ object NotificationHelper {
         phoneNumber: String,
         ruleDescription: String
     ) {
-        createChannel(context)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createChannel(context)
+        }
 
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
