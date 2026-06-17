@@ -1,3 +1,35 @@
 <resources>
     <string name="app_name">NoCall</string>
+    <string name="rules_title">拦截规则</string>
+    <string name="no_rules">暂无拦截规则\n点击右下角添加</string>
+    <string name="add_rule">添加规则</string>
+    <string name="rule_test">测试匹配</string>
+    <string name="settings">设置</string>
+    <string name="edit_rule">编辑规则</string>
+    <string name="pattern">匹配模式</string>
+    <string name="description">备注</string>
+    <string name="rule_type">匹配类型</string>
+    <string name="save">保存</string>
+    <string name="delete">删除</string>
+    <string name="enabled">启用</string>
+    <string name="test_title">测试匹配</string>
+    <string name="test_phone">输入测试号码</string>
+    <string name="test_button">测试</string>
+    <string name="test_matched">匹配规则: %1$s</string>
+    <string name="test_no_match">不会被拦截</string>
+    <string name="history_title">通话记录</string>
+    <string name="no_history">暂无通话记录</string>
+    <string name="blocked">已拦截</string>
+    <string name="allowed">已放行</string>
+    <string name="settings_title">设置</string>
+    <string name="export_rules">导出规则</string>
+    <string name="import_rules">导入规则</string>
+    <string name="clear_history">清空记录</string>
+    <string name="clear_confirm">确认清空所有通话记录？</string>
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+    <string name="export_success">规则已导出</string>
+    <string name="import_success">已导入 %1$d 条规则</string>
+    <string name="import_error">导入失败，请检查文件格式</string>
+    <string name="history_deleted">记录已清空</string>
 </resources>
