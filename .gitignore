@@ -1,15 +1,67 @@
+# Gradle files
+.gradle/
+build/
+*/build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio / IntelliJ
 *.iml
-.gradle
-/local.properties
+.idea/
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# OS files
 .DS_Store
-/build
-/captures
+Thumbs.db
+
+# Log files
+*.log
+
+# Android generated files
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Java / Kotlin
+*.class
+
+# External native build
 .externalNativeBuild
-.cxx
-local.properties
+.cxx/
+
+# Signing files
+*.jks
+*.keystore
+key.properties
+
+# Google Services
+google-services.json
+
+# Captures
+captures/
+
+# Lint
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+
+# Kotlin
+.kotlin/
+.worktrees/
+__pycache__
+
+# Python virtual environments
+scripts/.venv/
+
+.superpowers
