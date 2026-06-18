@@ -16,7 +16,7 @@ import cc.niaoer.nocall.data.model.WhitelistEntry
     version = 2,
     exportSchema = false
 )
-@TypeConverters(Converters.class)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun blockRuleDao(): BlockRuleDao
     abstract fun callLogDao(): CallLogDao
