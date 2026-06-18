@@ -43,6 +43,7 @@ import cc.niaoer.nocall.ui.rules.RulesScreen
 import cc.niaoer.nocall.ui.settings.SettingsScreen
 import cc.niaoer.nocall.ui.test.RuleTestScreen
 import cc.niaoer.nocall.ui.theme.NoCallTheme
+import cc.niaoer.nocall.ui.whitelist.WhitelistScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -175,6 +176,7 @@ fun NoCallNavHost() {
                 onAddRule = { navController.navigate(NavRoutes.RULE_ADD) },
                 onEditRule = { id -> navController.navigate(NavRoutes.ruleEdit(id)) },
                 onTestRule = { navController.navigate(NavRoutes.RULE_TEST) },
+                onWhitelist = { navController.navigate(NavRoutes.WHITELIST) },
                 onHistory = { navController.navigate(NavRoutes.HISTORY) },
                 onSettings = { navController.navigate(NavRoutes.SETTINGS) }
             )
@@ -197,6 +199,11 @@ fun NoCallNavHost() {
         }
         composable(NavRoutes.RULE_TEST) {
             RuleTestScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable(NavRoutes.WHITELIST) {
+            WhitelistScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AssistChip
@@ -49,6 +50,7 @@ fun RulesScreen(
     onAddRule: () -> Unit,
     onEditRule: (Long) -> Unit,
     onTestRule: () -> Unit,
+    onWhitelist: () -> Unit,
     onHistory: () -> Unit,
     onSettings: () -> Unit,
     viewModel: RulesViewModel = viewModel()
@@ -70,6 +72,12 @@ fun RulesScreen(
                         Icon(
                             Icons.Default.Science,
                             contentDescription = stringResource(R.string.rule_test)
+                        )
+                    }
+                    IconButton(onClick = onWhitelist) {
+                        Icon(
+                            Icons.Default.List,
+                            contentDescription = stringResource(R.string.whitelist_title)
                         )
                     }
                     IconButton(onClick = onSettings) {

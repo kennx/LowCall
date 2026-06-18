@@ -7,6 +7,7 @@ object NavRoutes {
     const val RULE_TEST = "rules/test"
     const val HISTORY = "history"
     const val SETTINGS = "settings"
+    const val WHITELIST = "whitelist"
 
     fun ruleEdit(ruleId: Long): String = "rules/$ruleId"
 }
