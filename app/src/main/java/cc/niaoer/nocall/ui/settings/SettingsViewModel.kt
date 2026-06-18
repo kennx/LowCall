@@ -13,8 +13,10 @@ import cc.niaoer.nocall.data.model.RuleType
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -32,6 +34,17 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     private val _isExporting = MutableStateFlow(false)
     val isExporting: StateFlow<Boolean> = _isExporting.asStateFlow()
+
+    private val settingsRepository = container.settingsRepository
+
+    val notificationEnabled: StateFlow<Boolean> = settingsRepository.notificationEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    fun setNotificationEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setNotificationEnabled(enabled)
+        }
+    }
 
     fun exportRules(uri: Uri) {
         viewModelScope.launch {
