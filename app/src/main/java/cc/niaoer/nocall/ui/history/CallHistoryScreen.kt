@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cc.niaoer.nocall.R
+import cc.niaoer.nocall.data.normalizePhone
 import cc.niaoer.nocall.data.model.CallAction
 import cc.niaoer.nocall.data.model.CallLog
 import java.text.SimpleDateFormat
@@ -49,6 +51,7 @@ fun CallHistoryScreen(
     viewModel: CallHistoryViewModel = viewModel()
 ) {
     val logs by viewModel.logs.collectAsStateWithLifecycle()
+    val whitelistedNumbers by viewModel.whitelistedNumbers.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -87,7 +90,11 @@ fun CallHistoryScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(logs, key = { it.id }) { log ->
-                    CallLogCard(log)
+                    CallLogCard(
+                        log = log,
+                        isWhitelisted = normalizePhone(log.phoneNumber) in whitelistedNumbers,
+                        onAddToWhitelist = { viewModel.addToWhitelist(log.phoneNumber) }
+                    )
                 }
             }
         }
@@ -95,7 +102,11 @@ fun CallHistoryScreen(
 }
 
 @Composable
-private fun CallLogCard(log: CallLog) {
+private fun CallLogCard(
+    log: CallLog,
+    isWhitelisted: Boolean,
+    onAddToWhitelist: () -> Unit
+) {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
     val isBlocked = log.action == CallAction.BLOCKED
 
@@ -141,6 +152,20 @@ private fun CallLogCard(log: CallLog) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+            }
+            if (isBlocked) {
+                Spacer(modifier = Modifier.height(8.dp))
+                TextButton(
+                    onClick = onAddToWhitelist,
+                    enabled = !isWhitelisted
+                ) {
+                    Text(
+                        text = stringResource(
+                            if (isWhitelisted) R.string.added_to_whitelist
+                            else R.string.add_to_whitelist
+                        )
+                    )
+                }
             }
         }
     }
