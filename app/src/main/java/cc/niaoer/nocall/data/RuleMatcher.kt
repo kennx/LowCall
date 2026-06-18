@@ -3,6 +3,16 @@ package cc.niaoer.nocall.data
 import cc.niaoer.nocall.data.model.BlockRule
 import cc.niaoer.nocall.data.model.RuleType
 
+fun looksLikeRegex(pattern: String): Boolean {
+    return pattern.startsWith("^") ||
+        pattern.endsWith("$") ||
+        pattern.contains("\\") ||
+        pattern.contains("|") ||
+        pattern.contains("[") ||
+        pattern.contains("{") ||
+        pattern.contains("(?")
+}
+
 class RuleMatcher {
 
     fun match(phoneNumber: String, rules: List<BlockRule>): BlockRule? {

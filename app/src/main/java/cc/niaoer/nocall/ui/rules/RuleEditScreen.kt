@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,6 +24,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -162,6 +164,24 @@ fun RuleEditScreen(
                 enabled = state.pattern.isNotBlank()
             ) {
                 Text(stringResource(R.string.save))
+            }
+
+            if (state.showRegexSuggestion) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.dismissRegexSuggestion() },
+                    title = { Text(stringResource(R.string.regex_suggestion_title)) },
+                    text = { Text(stringResource(R.string.regex_suggestion_message)) },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.confirmSwitchToRegex() }) {
+                            Text(stringResource(R.string.regex_suggestion_switch))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { viewModel.dismissRegexSuggestion() }) {
+                            Text(stringResource(R.string.regex_suggestion_keep))
+                        }
+                    }
+                )
             }
         }
     }

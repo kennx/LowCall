@@ -35,4 +35,8 @@
     <string name="setup_title">设置来电筛选</string>
     <string name="setup_message">请将 NoCall 设为来电筛选应用以启用拦截功能</string>
     <string name="open_settings">打开设置</string>
+    <string name="regex_suggestion_title">可能需要正则类型</string>
+    <string name="regex_suggestion_message">当前模式包含正则元字符，按「通配」类型可能无法正确匹配。是否切换为「正则」类型？</string>
+    <string name="regex_suggestion_switch">切换为正则</string>
+    <string name="regex_suggestion_keep">仍用通配</string>
 </resources>

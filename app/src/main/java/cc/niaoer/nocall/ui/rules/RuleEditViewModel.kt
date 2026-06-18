@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cc.niaoer.nocall.NoCallApplication
+import cc.niaoer.nocall.data.looksLikeRegex
 import cc.niaoer.nocall.data.model.BlockRule
 import cc.niaoer.nocall.data.model.RuleType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ data class RuleEditUiState(
     val description: String = "",
     val enabled: Boolean = true,
     val isNew: Boolean = true,
-    val saved: Boolean = false
+    val saved: Boolean = false,
+    val showRegexSuggestion: Boolean = false
 )
 
 class RuleEditViewModel(application: Application) : AndroidViewModel(application) {
@@ -62,15 +64,37 @@ class RuleEditViewModel(application: Application) : AndroidViewModel(application
 
     fun save() {
         val state = _uiState.value
-        if (state.pattern.isBlank()) return
+        val trimmedPattern = state.pattern.trim()
+        if (trimmedPattern.isBlank()) return
+        if (state.ruleType == RuleType.WILDCARD && looksLikeRegex(trimmedPattern)) {
+            _uiState.value = state.copy(pattern = trimmedPattern, showRegexSuggestion = true)
+            return
+        }
+        persistRule(trimmedPattern)
+    }
+
+    fun confirmSwitchToRegex() {
+        val state = _uiState.value.copy(ruleType = RuleType.REGEX, showRegexSuggestion = false)
+        _uiState.value = state
+        persistRule(state.pattern.trim())
+    }
+
+    fun dismissRegexSuggestion() {
+        _uiState.value = _uiState.value.copy(showRegexSuggestion = false)
+        persistRule(_uiState.value.pattern.trim())
+    }
+
+    private fun persistRule(pattern: String) {
+        val state = _uiState.value
+        if (pattern.isBlank()) return
         viewModelScope.launch {
             val rule = editingRule?.copy(
-                pattern = state.pattern,
+                pattern = pattern,
                 ruleType = state.ruleType,
                 description = state.description,
                 enabled = state.enabled
             ) ?: BlockRule(
-                pattern = state.pattern,
+                pattern = pattern,
                 ruleType = state.ruleType,
                 description = state.description,
                 enabled = state.enabled
