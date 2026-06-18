@@ -41,4 +41,17 @@
     <string name="regex_suggestion_switch">切换为正则</string>
     <string name="regex_suggestion_keep">仍用通配</string>
     <string name="invalid_regex_pattern">正则表达式格式无效</string>
+    <string name="notification_setting">拦截通知</string>
+    <string name="notification_setting_hint">关闭后仍会拦截，但不再显示系统通知</string>
+    <string name="add_to_whitelist">加入白名单</string>
+    <string name="added_to_whitelist">已加白名单</string>
+    <string name="whitelist_title">白名单</string>
+    <string name="no_whitelist">无白名单号码</string>
+    <string name="whitelist_number">号码</string>
+    <string name="whitelist_note">备注</string>
+    <string name="enable_contacts_whitelist">启用通讯录白名单</string>
+    <string name="enable_contacts_whitelist_message">允许读取通讯录，使通讯录中的号码自动放行</string>
+    <string name="whitelist_add">添加</string>
+    <string name="whitelist_cancel">取消</string>
+    <string name="whitelist_added_toast">已加入白名单</string>
 </resources>
