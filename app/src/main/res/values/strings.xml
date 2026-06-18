@@ -30,6 +30,7 @@
     <string name="cancel">取消</string>
     <string name="export_success">规则已导出</string>
     <string name="import_success">已导入 %1$d 条规则</string>
+    <string name="import_partial">已导入 %1$d 条规则，跳过 %2$d 条无效规则</string>
     <string name="import_error">导入失败，请检查文件格式</string>
     <string name="history_deleted">记录已清空</string>
     <string name="setup_title">设置来电筛选</string>

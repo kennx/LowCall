@@ -71,7 +71,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 val type = object : TypeToken<List<ExportRule>>() {}.type
                 val importList: List<ExportRule> = gson.fromJson(json, type)
 
-                val rules = importList.map { export ->
+                val filtered = filterValidRules(importList)
+                val rules = filtered.accepted.map { export ->
                     BlockRule(
                         pattern = export.pattern,
                         ruleType = RuleType.valueOf(export.ruleType),
@@ -80,11 +81,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                     )
                 }
                 container.blockRuleDao.insertAll(rules)
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.import_success, rules.size),
-                    Toast.LENGTH_SHORT
-                ).show()
+                val msg = if (filtered.rejected > 0) {
+                    context.getString(R.string.import_partial, rules.size, filtered.rejected)
+                } else {
+                    context.getString(R.string.import_success, rules.size)
+                }
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(
                     getApplication(),
