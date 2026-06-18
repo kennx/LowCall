@@ -10,8 +10,13 @@ fun looksLikeRegex(pattern: String): Boolean {
         pattern.contains("|") ||
         pattern.contains("[") ||
         pattern.contains("{") ||
-        pattern.contains("(?")
+        pattern.contains("(") ||
+        pattern.contains(")") ||
+        pattern.contains(".*") ||
+        pattern.contains(".+")
 }
+
+fun isValidRegex(pattern: String): Boolean = runCatching { Regex(pattern) }.isSuccess
 
 class RuleMatcher {
 

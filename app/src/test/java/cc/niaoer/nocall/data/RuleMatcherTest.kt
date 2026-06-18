@@ -141,6 +141,26 @@ class RuleMatcherTest {
         assertFalse(looksLikeRegex("13800138000"))
     }
 
+    @Test
+    fun looksLikeRegex_dotStar_returnsTrue() {
+        assertTrue(looksLikeRegex("138.*"))
+    }
+
+    @Test
+    fun looksLikeRegex_groupedPattern_returnsTrue() {
+        assertTrue(looksLikeRegex("(138).*"))
+    }
+
+    @Test
+    fun isValidRegex_validPattern_returnsTrue() {
+        assertTrue(isValidRegex("^138\\d{8}$"))
+    }
+
+    @Test
+    fun isValidRegex_unclosedCharacterClass_returnsFalse() {
+        assertFalse(isValidRegex("[0-9"))
+    }
+
     // --- Bug reproduction: regex pattern stored as WILDCARD ---
 
     @Test

@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.looksLikeRegex
 import cc.niaoer.nocall.data.model.BlockRule
 import cc.niaoer.nocall.data.model.RuleType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +18,8 @@ data class RuleEditUiState(
     val enabled: Boolean = true,
     val isNew: Boolean = true,
     val saved: Boolean = false,
-    val showRegexSuggestion: Boolean = false
+    val showRegexSuggestion: Boolean = false,
+    val patternError: RulePatternError? = null
 )
 
 class RuleEditViewModel(application: Application) : AndroidViewModel(application) {
@@ -47,11 +47,11 @@ class RuleEditViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun updatePattern(pattern: String) {
-        _uiState.value = _uiState.value.copy(pattern = pattern)
+        _uiState.value = _uiState.value.copy(pattern = pattern, patternError = null)
     }
 
     fun updateRuleType(ruleType: RuleType) {
-        _uiState.value = _uiState.value.copy(ruleType = ruleType)
+        _uiState.value = _uiState.value.copy(ruleType = ruleType, patternError = null)
     }
 
     fun updateDescription(description: String) {
@@ -64,38 +64,81 @@ class RuleEditViewModel(application: Application) : AndroidViewModel(application
 
     fun save() {
         val state = _uiState.value
-        val trimmedPattern = state.pattern.trim()
-        if (trimmedPattern.isBlank()) return
-        if (state.ruleType == RuleType.WILDCARD && looksLikeRegex(trimmedPattern)) {
-            _uiState.value = state.copy(pattern = trimmedPattern, showRegexSuggestion = true)
-            return
-        }
-        persistRule(trimmedPattern)
+        applyDecision(decideRuleSave(pattern = state.pattern, ruleType = state.ruleType))
     }
 
     fun confirmSwitchToRegex() {
-        val state = _uiState.value.copy(ruleType = RuleType.REGEX, showRegexSuggestion = false)
-        _uiState.value = state
-        persistRule(state.pattern.trim())
+        applyDecision(
+            decideRegexSuggestion(
+                pattern = _uiState.value.pattern,
+                action = RegexSuggestionAction.SWITCH_TO_REGEX
+            )
+        )
     }
 
-    fun dismissRegexSuggestion() {
-        _uiState.value = _uiState.value.copy(showRegexSuggestion = false)
-        persistRule(_uiState.value.pattern.trim())
+    fun keepWildcardAndSave() {
+        applyDecision(
+            decideRegexSuggestion(
+                pattern = _uiState.value.pattern,
+                action = RegexSuggestionAction.KEEP_WILDCARD
+            )
+        )
     }
 
-    private fun persistRule(pattern: String) {
+    fun cancelRegexSuggestion() {
+        applyDecision(
+            decideRegexSuggestion(
+                pattern = _uiState.value.pattern,
+                action = RegexSuggestionAction.CANCEL
+            )
+        )
+    }
+
+    private fun applyDecision(decision: RuleEditDecision) {
+        when (decision) {
+            RuleEditDecision.NoOp -> Unit
+            RuleEditDecision.CancelSuggestion -> {
+                _uiState.value = _uiState.value.copy(showRegexSuggestion = false)
+            }
+            is RuleEditDecision.ShowRegexSuggestion -> {
+                _uiState.value = _uiState.value.copy(
+                    pattern = decision.pattern,
+                    showRegexSuggestion = true,
+                    patternError = null
+                )
+            }
+            is RuleEditDecision.InvalidRegex -> {
+                _uiState.value = _uiState.value.copy(
+                    pattern = decision.pattern,
+                    ruleType = RuleType.REGEX,
+                    showRegexSuggestion = false,
+                    patternError = RulePatternError.INVALID_REGEX
+                )
+            }
+            is RuleEditDecision.Persist -> {
+                _uiState.value = _uiState.value.copy(
+                    pattern = decision.pattern,
+                    ruleType = decision.ruleType,
+                    showRegexSuggestion = false,
+                    patternError = null
+                )
+                persistRule(pattern = decision.pattern, ruleType = decision.ruleType)
+            }
+        }
+    }
+
+    private fun persistRule(pattern: String, ruleType: RuleType) {
         val state = _uiState.value
         if (pattern.isBlank()) return
         viewModelScope.launch {
             val rule = editingRule?.copy(
                 pattern = pattern,
-                ruleType = state.ruleType,
+                ruleType = ruleType,
                 description = state.description,
                 enabled = state.enabled
             ) ?: BlockRule(
                 pattern = pattern,
-                ruleType = state.ruleType,
+                ruleType = ruleType,
                 description = state.description,
                 enabled = state.enabled
             )

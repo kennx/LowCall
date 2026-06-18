@@ -101,7 +101,13 @@ fun RuleEditScreen(
                 onValueChange = viewModel::updatePattern,
                 label = { Text(stringResource(R.string.pattern)) },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                isError = state.patternError != null,
+                supportingText = if (state.patternError != null) {
+                    { Text(stringResource(R.string.invalid_regex_pattern)) }
+                } else {
+                    null
+                }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -168,7 +174,7 @@ fun RuleEditScreen(
 
             if (state.showRegexSuggestion) {
                 AlertDialog(
-                    onDismissRequest = { viewModel.dismissRegexSuggestion() },
+                    onDismissRequest = { viewModel.cancelRegexSuggestion() },
                     title = { Text(stringResource(R.string.regex_suggestion_title)) },
                     text = { Text(stringResource(R.string.regex_suggestion_message)) },
                     confirmButton = {
@@ -177,7 +183,7 @@ fun RuleEditScreen(
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = { viewModel.dismissRegexSuggestion() }) {
+                        TextButton(onClick = { viewModel.keepWildcardAndSave() }) {
                             Text(stringResource(R.string.regex_suggestion_keep))
                         }
                     }

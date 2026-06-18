@@ -55,6 +55,8 @@ class BlockingCallScreeningService : CallScreeningService() {
                         timestamp = System.currentTimeMillis()
                     )
                 )
+                val response = CallResponse.Builder().build()
+                respondToCall(details, response)
             }
         }
     }
