@@ -67,6 +67,7 @@ fun RulesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.height(56.dp),
                 title = {
                     if (uiState.isSearching) {
                         TextField(
@@ -139,9 +140,10 @@ fun RulesScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp)
+                    contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(uiState.rules, key = { it.id }) { rule ->
                         RuleCard(

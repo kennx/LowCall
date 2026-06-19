@@ -48,6 +48,7 @@ fun RuleTestScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.height(56.dp),
                 title = { Text(stringResource(R.string.test_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface

@@ -81,6 +81,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.height(56.dp),
                 title = { Text(stringResource(R.string.settings_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface

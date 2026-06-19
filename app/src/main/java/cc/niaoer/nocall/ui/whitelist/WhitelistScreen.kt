@@ -91,6 +91,7 @@ fun WhitelistScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.height(56.dp),
                 title = { Text(stringResource(R.string.whitelist_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
@@ -183,9 +184,10 @@ fun WhitelistScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
-                    contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp)
+                    contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(uiState.entries, key = { it.id }) { entry ->
                         WhitelistItem(

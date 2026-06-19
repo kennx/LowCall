@@ -2,6 +2,7 @@ package cc.niaoer.nocall.ui.rules
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -33,7 +35,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -70,6 +71,7 @@ fun RuleEditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.height(56.dp),
                 title = {
                     Text(
                         if (state.isNew) stringResource(R.string.add_rule)
@@ -124,39 +126,10 @@ fun RuleEditScreen(
                 style = MaterialTheme.typography.labelLarge
             )
             Spacer(modifier = Modifier.height(8.dp))
-            val ruleTypes = listOf(RuleType.REGEX, RuleType.WILDCARD, RuleType.EXACT)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ruleTypes.forEach { type ->
-                    val selected = state.ruleType == type
-                    Surface(
-                        onClick = { viewModel.updateRuleType(type) },
-                        shape = MaterialTheme.shapes.extraSmall,
-                        color = if (selected) MaterialTheme.colorScheme.primaryContainer
-                                else MaterialTheme.colorScheme.surface,
-                        contentColor = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
-                                      else MaterialTheme.colorScheme.onSurfaceVariant,
-                        border = if (!selected) BorderStroke(
-                            1.dp,
-                            MaterialTheme.colorScheme.outline
-                        ) else null,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            text = when (type) {
-                                RuleType.EXACT -> "精确"
-                                RuleType.WILDCARD -> "通配"
-                                RuleType.REGEX -> "正则"
-                            },
-                            style = MaterialTheme.typography.labelLarge,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(vertical = 12.dp)
-                        )
-                    }
-                }
-            }
+            RuleTypeSelector(
+                selected = state.ruleType,
+                onSelect = viewModel::updateRuleType
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -211,6 +184,63 @@ fun RuleEditScreen(
                         }
                     }
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RuleTypeSelector(
+    selected: RuleType,
+    onSelect: (RuleType) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val options = listOf(
+        RuleType.REGEX to "正则",
+        RuleType.WILDCARD to "通配",
+        RuleType.EXACT to "精确"
+    )
+    val shape = RoundedCornerShape(4.dp)
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(48.dp),
+        shape = shape,
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            options.forEach { (type, label) ->
+                val isSelected = selected == type
+                Surface(
+                    onClick = { onSelect(type) },
+                    modifier = Modifier.weight(1f),
+                    shape = shape,
+                    color = if (isSelected)
+                        MaterialTheme.colorScheme.secondaryContainer
+                    else
+                        MaterialTheme.colorScheme.surface
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (isSelected)
+                                MaterialTheme.colorScheme.onSecondaryContainer
+                            else
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
         }
     }
