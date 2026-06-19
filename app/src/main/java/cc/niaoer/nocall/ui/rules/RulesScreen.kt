@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
@@ -27,8 +30,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -55,33 +62,40 @@ fun RulesScreen(
     onSettings: () -> Unit,
     viewModel: RulesViewModel = viewModel()
 ) {
-    val rules by viewModel.rules.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.rules_title)) },
+                title = {
+                    if (uiState.isSearching) {
+                        TextField(
+                            value = uiState.searchQuery,
+                            onValueChange = viewModel::setSearchQuery,
+                            placeholder = { Text("搜索规则") },
+                            singleLine = true,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    } else {
+                        Text(stringResource(R.string.rules_title))
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
                 actions = {
-                    IconButton(onClick = onHistory) {
-                        Icon(Icons.Default.History, contentDescription = stringResource(R.string.history_title))
-                    }
-                    IconButton(onClick = onTestRule) {
+                    IconButton(onClick = viewModel::toggleSearch) {
                         Icon(
-                            Icons.Default.Science,
-                            contentDescription = stringResource(R.string.rule_test)
+                            if (uiState.isSearching) Icons.Default.Close else Icons.Default.Search,
+                            contentDescription = "搜索"
                         )
                     }
-                    IconButton(onClick = onWhitelist) {
-                        Icon(
-                            Icons.Default.List,
-                            contentDescription = stringResource(R.string.whitelist_title)
-                        )
-                    }
-                    IconButton(onClick = onSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings))
+                    IconButton(onClick = { /* more menu */ }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "更多")
                     }
                 }
             )
@@ -92,36 +106,54 @@ fun RulesScreen(
             }
         }
     ) { paddingValues ->
-        if (rules.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            val tabs = listOf(null to "全部") + RuleType.entries.map { it to typeLabel(it) }
+            val selectedIndex = tabs.indexOfFirst { it.first == uiState.selectedTab }
+
+            PrimaryScrollableTabRow(
+                selectedTabIndex = if (selectedIndex >= 0) selectedIndex else 0,
+                edgePadding = 16.dp
             ) {
-                Text(
-                    text = stringResource(R.string.no_rules),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(rules, key = { it.id }) { rule ->
-                    RuleCard(
-                        rule = rule,
-                        onToggle = { viewModel.toggleEnabled(rule) },
-                        onClick = { onEditRule(rule.id) },
-                        onDelete = { viewModel.deleteRule(rule) }
+                tabs.forEachIndexed { index, (type, label) ->
+                    Tab(
+                        selected = selectedIndex == index,
+                        onClick = { viewModel.selectTab(type) },
+                        text = { Text(label) }
                     )
                 }
-                item { Spacer(modifier = Modifier.height(80.dp)) }
+            }
+
+            if (uiState.rules.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.no_rules),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(uiState.rules, key = { it.id }) { rule ->
+                        RuleCard(
+                            rule = rule,
+                            onToggle = { viewModel.toggleEnabled(rule) },
+                            onClick = { onEditRule(rule.id) }
+                        )
+                    }
+                    item { Spacer(modifier = Modifier.height(80.dp)) }
+                }
             }
         }
     }
@@ -131,11 +163,11 @@ fun RulesScreen(
 private fun RuleCard(
     rule: BlockRule,
     onToggle: () -> Unit,
-    onClick: () -> Unit,
-    onDelete: () -> Unit
+    onClick: () -> Unit
 ) {
     Card(
         onClick = onClick,
+        elevation = CardDefaults.elevatedCardElevation(),
         colors = CardDefaults.cardColors(
             containerColor = if (rule.enabled)
                 MaterialTheme.colorScheme.surfaceContainerHigh
@@ -178,13 +210,14 @@ private fun RuleCard(
 
 @Composable
 private fun RuleTypeChip(type: RuleType) {
-    val label = when (type) {
-        RuleType.EXACT -> "精确"
-        RuleType.WILDCARD -> "通配"
-        RuleType.REGEX -> "正则"
-    }
     AssistChip(
         onClick = {},
-        label = { Text(label, style = MaterialTheme.typography.labelSmall) }
+        label = { Text(typeLabel(type), style = MaterialTheme.typography.labelSmall) }
     )
+}
+
+private fun typeLabel(type: RuleType): String = when (type) {
+    RuleType.EXACT -> "精确"
+    RuleType.WILDCARD -> "通配"
+    RuleType.REGEX -> "正则"
 }
