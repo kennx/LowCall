@@ -159,12 +159,13 @@ fun NoCallApp(screeningEnabled: Boolean, onSetup: () -> Unit) {
                             label = { Text(stringResource(item.labelRes)) },
                             selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
                             onClick = {
+                                // restoreState is intentionally omitted: Navigation Compose can
+                                // restore the wrong saved state when returning to the start
+                                // destination after navigating to an inner screen from another tab
+                                // (e.g. Home card -> Rules -> History -> Home ends up on Rules).
                                 navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
+                                    popUpTo(navController.graph.findStartDestination().id)
                                     launchSingleTop = true
-                                    restoreState = true
                                 }
                             }
                         )
