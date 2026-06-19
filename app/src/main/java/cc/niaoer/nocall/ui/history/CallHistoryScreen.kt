@@ -9,11 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.CallReceived
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -31,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -41,6 +46,7 @@ import cc.niaoer.nocall.data.normalizePhone
 import cc.niaoer.nocall.data.model.CallAction
 import cc.niaoer.nocall.data.model.CallLog
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -82,75 +88,137 @@ fun CallHistoryScreen(
                 )
             }
         } else {
+            val grouped = groupByDate(logs)
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(logs, key = { it.id }) { log ->
-                    CallLogCard(
-                        log = log,
-                        isWhitelisted = normalizePhone(log.phoneNumber) in whitelistedNumbers,
-                        onAddToWhitelist = { viewModel.addToWhitelist(log.phoneNumber) }
-                    )
+                grouped.forEach { (dateLabel, dateLogs) ->
+                    item {
+                        Text(
+                            text = dateLabel,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                        )
+                    }
+                    items(dateLogs, key = { it.id }) { log ->
+                        CallLogItem(
+                            log = log,
+                            isWhitelisted = normalizePhone(log.phoneNumber) in whitelistedNumbers,
+                            onAddToWhitelist = { viewModel.addToWhitelist(log.phoneNumber) }
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+private fun groupByDate(logs: List<CallLog>): List<Pair<String, List<CallLog>>> {
+    val today = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+    val yesterday = Calendar.getInstance().apply {
+        add(Calendar.DAY_OF_YEAR, -1)
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+
+    val dateFormat = SimpleDateFormat("M月d日", Locale.getDefault())
+
+    return logs.groupBy { log ->
+        val logDay = Calendar.getInstance().apply {
+            timeInMillis = log.timestamp
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        when {
+            logDay.timeInMillis == today.timeInMillis -> "今天"
+            logDay.timeInMillis == yesterday.timeInMillis -> "昨天"
+            else -> dateFormat.format(Date(log.timestamp))
+        }
+    }.toList()
+}
+
 @Composable
-private fun CallLogCard(
+private fun CallLogItem(
     log: CallLog,
     isWhitelisted: Boolean,
     onAddToWhitelist: () -> Unit
 ) {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val isBlocked = log.action == CallAction.BLOCKED
 
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = if (isBlocked)
-                MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
-            else
-                MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = log.phoneNumber,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isBlocked) {
+                        Icon(
+                            Icons.Default.Block,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    } else {
+                        Icon(
+                            Icons.Default.CallReceived,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = log.phoneNumber,
+                        style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = if (isBlocked) {
+                            "${log.matchedRulePattern ?: "未知规则"} · 响铃 0 秒"
+                        } else {
+                            "已放行 · 白名单匹配"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 Spacer(modifier = Modifier.width(8.dp))
                 ActionChip(isBlocked)
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = dateFormat.format(Date(log.timestamp)),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            if (isBlocked && log.matchedRulePattern != null) {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "规则: ${log.matchedRulePattern}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    text = timeFormat.format(Date(log.timestamp)),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             if (isBlocked) {
@@ -178,17 +246,17 @@ private fun ActionChip(isBlocked: Boolean) {
     else
         stringResource(R.string.allowed)
     val containerColor = if (isBlocked)
-        MaterialTheme.colorScheme.error
+        MaterialTheme.colorScheme.errorContainer
     else
-        MaterialTheme.colorScheme.primary
+        MaterialTheme.colorScheme.primaryContainer
     val labelColor = if (isBlocked)
-        MaterialTheme.colorScheme.onError
+        MaterialTheme.colorScheme.onErrorContainer
     else
-        MaterialTheme.colorScheme.onPrimary
+        MaterialTheme.colorScheme.onPrimaryContainer
 
     AssistChip(
         onClick = {},
-        label = { Text(label) },
+        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
         colors = AssistChipDefaults.assistChipColors(
             containerColor = containerColor,
             labelColor = labelColor
