@@ -1,6 +1,5 @@
 package cc.niaoer.nocall.ui.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,15 +64,15 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
                 ),
                 actions = {
                     IconButton(onClick = { /* notifications */ }) {
                         Icon(
                             Icons.Default.Notifications,
                             contentDescription = stringResource(R.string.notification_setting),
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -131,34 +130,32 @@ private fun HeroSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(horizontal = 24.dp, vertical = 20.dp)
+            .padding(horizontal = 16.dp, vertical = 20.dp)
     ) {
         Text(
             text = stringResource(R.string.home_greeting),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(4.dp))
         Row(verticalAlignment = Alignment.Bottom) {
             Text(
                 text = totalBlocked.toString(),
                 style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = stringResource(R.string.home_stat_suffix),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.home_today_week, todayBlocked, weekBlocked),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -184,13 +181,6 @@ private fun QuickGrid(
         Icons.Default.Add
     )
 
-    val containerColors = listOf(
-        MaterialTheme.colorScheme.primaryContainer,
-        MaterialTheme.colorScheme.secondaryContainer,
-        MaterialTheme.colorScheme.tertiaryContainer,
-        MaterialTheme.colorScheme.primaryContainer
-    )
-
     Column(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -207,7 +197,6 @@ private fun QuickGrid(
                         label = label,
                         hint = hint,
                         icon = icons[index],
-                        containerColor = containerColors[index],
                         onClick = onClick,
                         modifier = Modifier.weight(1f)
                     )
@@ -222,26 +211,36 @@ private fun QuickCard(
     label: String,
     hint: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    containerColor: androidx.compose.ui.graphics.Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = containerColor),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .clip(RoundedCornerShape(20.dp)),
+                    .clip(RoundedCornerShape(12.dp))
+                    .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(icon, contentDescription = null)
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = label, style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = label,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
             Text(
                 text = hint,
                 style = MaterialTheme.typography.bodySmall,
@@ -258,7 +257,9 @@ private fun RecentBlockedItem(log: CallLog) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
     ) {
         Row(
             modifier = Modifier

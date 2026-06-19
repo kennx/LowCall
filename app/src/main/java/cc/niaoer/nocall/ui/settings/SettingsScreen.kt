@@ -92,23 +92,23 @@ fun SettingsScreen(
                 }
             )
         }
-        ) { paddingValues ->
-            Column(
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            // About card
+            Card(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
-                // About card
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -131,12 +131,13 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
                         text = "来电拦截",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                     )
                 }
             }
@@ -145,8 +146,6 @@ fun SettingsScreen(
             SectionTitle("防护开关")
             SettingItem(
                 icon = Icons.Default.NotificationsActive,
-                iconContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                iconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 title = stringResource(R.string.notification_setting),
                 description = stringResource(R.string.notification_setting_hint),
                 trailing = {
@@ -163,22 +162,16 @@ fun SettingsScreen(
             SectionTitle("规则与数据")
             SettingItem(
                 icon = Icons.Default.CloudUpload,
-                iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 title = stringResource(R.string.export_rules),
                 onClick = { exportLauncher.launch("nocall_rules.json") }
             )
             SettingItem(
                 icon = Icons.Default.CloudDownload,
-                iconContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                iconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 title = stringResource(R.string.import_rules),
                 onClick = { importLauncher.launch(arrayOf("application/json", "*/*")) }
             )
             SettingItem(
                 icon = Icons.Default.Delete,
-                iconContainerColor = MaterialTheme.colorScheme.errorContainer,
-                iconContentColor = MaterialTheme.colorScheme.onErrorContainer,
                 title = stringResource(R.string.clear_history),
                 onClick = { showClearDialog = true }
             )
@@ -222,8 +215,6 @@ private fun SectionTitle(title: String) {
 @Composable
 private fun SettingItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    iconContainerColor: androidx.compose.ui.graphics.Color,
-    iconContentColor: androidx.compose.ui.graphics.Color,
     title: String,
     description: String? = null,
     onClick: (() -> Unit)? = null,
@@ -233,7 +224,7 @@ private fun SettingItem(
         onClick = onClick ?: {},
         enabled = onClick != null,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
@@ -252,14 +243,15 @@ private fun SettingItem(
                 Icon(
                     icon,
                     contentDescription = null,
-                    tint = iconContentColor
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (description != null) {
                     Text(
