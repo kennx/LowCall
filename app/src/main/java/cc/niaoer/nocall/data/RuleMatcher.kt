@@ -19,35 +19,25 @@ fun looksLikeRegex(pattern: String): Boolean {
 
 fun isValidRegex(pattern: String): Boolean = runCatching { Regex(pattern) }.isSuccess
 
-class RuleMatcher {
-
-    fun match(phoneNumber: String, rules: List<BlockRule>): BlockRule? {
-        return rules.firstOrNull { rule ->
-            rule.enabled && when (rule.ruleType) {
-                RuleType.EXACT -> phoneNumber == rule.pattern
-                RuleType.WILDCARD -> wildcardToRegex(rule.pattern).matches(phoneNumber)
-                RuleType.REGEX -> runCatching {
-                    Regex(rule.pattern).matches(phoneNumber)
-                }.onFailure { e ->
-                    Log.w("RuleMatcher", "Invalid regex pattern: ${rule.pattern}", e)
-                }.getOrDefault(false)
-            }
+fun match(phoneNumber: String, rules: List<BlockRule>): BlockRule? =
+    rules.firstOrNull { rule ->
+        rule.enabled && when (rule.ruleType) {
+            RuleType.EXACT -> phoneNumber == rule.pattern
+            RuleType.WILDCARD -> wildcardToRegex(rule.pattern).matches(phoneNumber)
+            RuleType.REGEX -> runCatching {
+                Regex(rule.pattern).matches(phoneNumber)
+            }.onFailure { e ->
+                Log.w("RuleMatcher", "Invalid regex pattern: ${rule.pattern}", e)
+            }.getOrDefault(false)
         }
     }
 
-    private fun wildcardToRegex(pattern: String): Regex {
-        val escaped = StringBuilder()
-        for (ch in pattern) {
-            when (ch) {
-                '*' -> escaped.append(".*")
-                '?' -> escaped.append('.')
-                '.', '+', '(', ')', '[', ']', '{', '}', '^', '$', '|', '\\' -> {
-                    escaped.append('\\')
-                    escaped.append(ch)
-                }
-                else -> escaped.append(ch)
-            }
+private fun wildcardToRegex(pattern: String): Regex =
+    Regex("^${pattern.map { ch ->
+        when (ch) {
+            '*' -> ".*"
+            '?' -> "."
+            in ".+()[]{}^$|\\" -> "\\$ch"
+            else -> ch.toString()
         }
-        return Regex("^${escaped}$")
-    }
-}
+    }.joinToString("")}$")

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cc.niaoer.nocall.NoCallApplication
+import cc.niaoer.nocall.data.match
 import cc.niaoer.nocall.data.model.BlockRule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +32,7 @@ class RuleTestViewModel(application: Application) : AndroidViewModel(application
         if (phone.isBlank()) return
         viewModelScope.launch {
             val rules = container.blockRuleDao.getEnabledList()
-            val matched = container.ruleMatcher.match(phone, rules)
+            val matched = match(phone, rules)
             _uiState.value = _uiState.value.copy(matchedRule = matched, tested = true)
         }
     }

@@ -6,6 +6,7 @@ import android.telecom.CallScreeningService
 import android.util.Log
 import androidx.annotation.RequiresApi
 import cc.niaoer.nocall.NoCallApplication
+import cc.niaoer.nocall.data.match
 import cc.niaoer.nocall.data.model.CallAction
 import cc.niaoer.nocall.data.model.CallLog
 import kotlinx.coroutines.flow.first
@@ -56,7 +57,7 @@ class BlockingCallScreeningService : CallScreeningService() {
             }
 
             val enabledRules = container.blockRuleDao.getEnabledList()
-            val matched = container.ruleMatcher.match(phoneNumber, enabledRules)
+            val matched = match(phoneNumber, enabledRules)
 
             if (matched != null) {
                 container.callLogDao.insert(
