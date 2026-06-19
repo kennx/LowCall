@@ -1,6 +1,7 @@
 package cc.niaoer.nocall.ui.navigation
 
 object NavRoutes {
+    const val HOME = "home"
     const val RULES = "rules"
     const val RULE_ADD = "rules/add"
     const val RULE_EDIT = "rules/{ruleId}"
