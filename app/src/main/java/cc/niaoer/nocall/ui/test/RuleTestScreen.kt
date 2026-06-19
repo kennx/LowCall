@@ -1,13 +1,20 @@
 package cc.niaoer.nocall.ui.test
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -22,6 +29,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -76,41 +84,60 @@ fun RuleTestScreen(
                 Text(stringResource(R.string.test_button))
             }
 
-            if (state.tested) {
+            AnimatedVisibility(
+                visible = state.tested,
+                enter = slideInVertically(initialOffsetY = { it / 2 })
+            ) {
                 Spacer(modifier = Modifier.height(24.dp))
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (state.matchedRule != null)
-                            MaterialTheme.colorScheme.errorContainer
-                        else
-                            MaterialTheme.colorScheme.surfaceContainerHigh
-                    )
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        if (state.matchedRule != null) {
-                            val rule = state.matchedRule!!
-                            Text(
-                                text = stringResource(R.string.test_matched, rule.pattern),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onErrorContainer
-                            )
-                            if (rule.description.isNotBlank()) {
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = rule.description,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                            }
-                        } else {
-                            Text(
-                                text = stringResource(R.string.test_no_match),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
+                ResultCard(matchedRule = state.matchedRule)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ResultCard(matchedRule: cc.niaoer.nocall.data.model.BlockRule?) {
+    val isBlocked = matchedRule != null
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = if (isBlocked)
+                MaterialTheme.colorScheme.errorContainer
+            else
+                MaterialTheme.colorScheme.surfaceContainerHigh
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    if (isBlocked) Icons.Default.Block else Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = if (isBlocked)
+                        MaterialTheme.colorScheme.error
+                    else
+                        MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = if (isBlocked) {
+                        stringResource(R.string.test_matched, matchedRule!!.pattern)
+                    } else {
+                        stringResource(R.string.test_no_match)
+                    },
+                    style = MaterialTheme.typography.titleMedium,
+                    color = if (isBlocked)
+                        MaterialTheme.colorScheme.onErrorContainer
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            if (isBlocked && matchedRule?.description?.isNotBlank() == true) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = matchedRule.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
             }
         }
     }
