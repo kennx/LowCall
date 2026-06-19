@@ -1,8 +1,9 @@
 package cc.niaoer.nocall.ui.home
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.data.db.CallLogDao
+import cc.niaoer.nocall.NoCallApplication
 import cc.niaoer.nocall.data.model.CallLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,9 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class HomeViewModel(
-    private val callLogDao: CallLogDao
-) : ViewModel() {
+class HomeViewModel(application: Application) : AndroidViewModel(application) {
+    private val callLogDao = (application as NoCallApplication).appContainer.callLogDao
 
     data class UiState(
         val totalBlocked: Int = 0,
