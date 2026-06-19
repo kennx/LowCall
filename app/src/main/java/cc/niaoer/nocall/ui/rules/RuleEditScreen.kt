@@ -1,5 +1,7 @@
 package cc.niaoer.nocall.ui.rules
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,9 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -123,19 +124,35 @@ fun RuleEditScreen(
                 style = MaterialTheme.typography.labelLarge
             )
             Spacer(modifier = Modifier.height(8.dp))
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                RuleType.entries.forEachIndexed { index, type ->
-                    SegmentedButton(
-                        selected = state.ruleType == type,
+            val ruleTypes = listOf(RuleType.REGEX, RuleType.WILDCARD, RuleType.EXACT)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ruleTypes.forEach { type ->
+                    val selected = state.ruleType == type
+                    Surface(
                         onClick = { viewModel.updateRuleType(type) },
-                        shape = SegmentedButtonDefaults.itemShape(index, RuleType.entries.size)
+                        shape = MaterialTheme.shapes.extraSmall,
+                        color = if (selected) MaterialTheme.colorScheme.primaryContainer
+                                else MaterialTheme.colorScheme.surface,
+                        contentColor = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                                      else MaterialTheme.colorScheme.onSurfaceVariant,
+                        border = if (!selected) BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.outline
+                        ) else null,
+                        modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            when (type) {
+                            text = when (type) {
                                 RuleType.EXACT -> "精确"
                                 RuleType.WILDCARD -> "通配"
                                 RuleType.REGEX -> "正则"
-                            }
+                            },
+                            style = MaterialTheme.typography.labelLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(vertical = 12.dp)
                         )
                     }
                 }

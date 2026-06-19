@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 data class RuleEditUiState(
     val pattern: String = "",
-    val ruleType: RuleType = RuleType.EXACT,
+    val ruleType: RuleType = RuleType.REGEX,
     val description: String = "",
     val enabled: Boolean = true,
     val isNew: Boolean = true,

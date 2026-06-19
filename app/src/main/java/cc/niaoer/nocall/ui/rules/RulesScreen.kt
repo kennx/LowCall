@@ -3,6 +3,7 @@ package cc.niaoer.nocall.ui.rules
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +18,6 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -94,9 +94,6 @@ fun RulesScreen(
                             contentDescription = "搜索"
                         )
                     }
-                    IconButton(onClick = { /* more menu */ }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "更多")
-                    }
                 }
             )
         },
@@ -143,7 +140,8 @@ fun RulesScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp)
                 ) {
                     items(uiState.rules, key = { it.id }) { rule ->
                         RuleCard(
@@ -152,7 +150,6 @@ fun RulesScreen(
                             onClick = { onEditRule(rule.id) }
                         )
                     }
-                    item { Spacer(modifier = Modifier.height(80.dp)) }
                 }
             }
         }

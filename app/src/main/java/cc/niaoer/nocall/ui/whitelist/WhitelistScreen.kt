@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -183,7 +184,8 @@ fun WhitelistScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp)
                 ) {
                     items(uiState.entries, key = { it.id }) { entry ->
                         WhitelistItem(
@@ -191,7 +193,6 @@ fun WhitelistScreen(
                             onDelete = { viewModel.delete(entry.id) }
                         )
                     }
-                    item { Spacer(modifier = Modifier.height(80.dp)) }
                 }
             }
         }
