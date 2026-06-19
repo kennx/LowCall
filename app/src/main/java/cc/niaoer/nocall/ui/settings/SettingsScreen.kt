@@ -2,6 +2,8 @@ package cc.niaoer.nocall.ui.settings
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,16 +11,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -32,8 +43,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -84,58 +97,92 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            // About card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
-                Column(modifier = Modifier.weight(1f)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Shield,
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = stringResource(R.string.notification_setting),
-                        style = MaterialTheme.typography.bodyLarge
+                        text = stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.titleLarge
                     )
                     Text(
-                        text = stringResource(R.string.notification_setting_hint),
-                        style = MaterialTheme.typography.bodySmall,
+                        text = "来电拦截",
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Switch(
-                    checked = notificationEnabled,
-                    onCheckedChange = viewModel::setNotificationEnabled
-                )
             }
+
+            // Section: Protection
+            SectionTitle("防护开关")
+            SettingItem(
+                icon = Icons.Default.NotificationsActive,
+                iconContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                iconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                title = stringResource(R.string.notification_setting),
+                description = stringResource(R.string.notification_setting_hint),
+                trailing = {
+                    Switch(
+                        checked = notificationEnabled,
+                        onCheckedChange = viewModel::setNotificationEnabled
+                    )
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Section: Rules and Data
+            SectionTitle("规则与数据")
+            SettingItem(
+                icon = Icons.Default.CloudUpload,
+                iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                title = stringResource(R.string.export_rules),
+                onClick = { exportLauncher.launch("nocall_rules.json") }
+            )
+            SettingItem(
+                icon = Icons.Default.CloudDownload,
+                iconContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                iconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                title = stringResource(R.string.import_rules),
+                onClick = { importLauncher.launch(arrayOf("application/json", "*/*")) }
+            )
+            SettingItem(
+                icon = Icons.Default.Delete,
+                iconContainerColor = MaterialTheme.colorScheme.errorContainer,
+                iconContentColor = MaterialTheme.colorScheme.onErrorContainer,
+                title = stringResource(R.string.clear_history),
+                onClick = { showClearDialog = true }
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { exportLauncher.launch("nocall_rules.json") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.export_rules))
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedButton(
-                onClick = { importLauncher.launch(arrayOf("application/json", "*/*")) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.import_rules))
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { showClearDialog = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
-            ) {
-                Text(stringResource(R.string.clear_history))
-            }
         }
     }
 
@@ -158,5 +205,71 @@ fun SettingsScreen(
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+    )
+}
+
+@Composable
+private fun SettingItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    iconContainerColor: androidx.compose.ui.graphics.Color,
+    iconContentColor: androidx.compose.ui.graphics.Color,
+    title: String,
+    description: String? = null,
+    onClick: (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null
+) {
+    Card(
+        onClick = onClick ?: {},
+        enabled = onClick != null,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = iconContentColor
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                if (description != null) {
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            if (trailing != null) {
+                trailing()
+            }
+        }
     }
 }
