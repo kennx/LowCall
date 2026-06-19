@@ -21,6 +21,4 @@ interface WhitelistDao {
     @Query("DELETE FROM whitelist WHERE id = :id")
     suspend fun deleteById(id: Long)
 
-    @Query("SELECT * FROM whitelist WHERE phone_number LIKE '%' || :query || '%' OR note LIKE '%' || :query || '%' ORDER BY created_at DESC")
-    suspend fun searchEntries(query: String): List<WhitelistEntry>
 }

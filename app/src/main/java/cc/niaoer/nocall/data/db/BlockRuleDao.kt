@@ -15,9 +15,6 @@ interface BlockRuleDao {
     fun getAll(): Flow<List<BlockRule>>
 
     @Query("SELECT * FROM block_rules WHERE enabled = 1 ORDER BY created_at DESC")
-    fun getEnabled(): Flow<List<BlockRule>>
-
-    @Query("SELECT * FROM block_rules WHERE enabled = 1 ORDER BY created_at DESC")
     suspend fun getEnabledList(): List<BlockRule>
 
     @Query("SELECT * FROM block_rules WHERE id = :id")
@@ -32,12 +29,6 @@ interface BlockRuleDao {
     @Delete
     suspend fun delete(rule: BlockRule)
 
-    @Query("DELETE FROM block_rules WHERE id = :id")
-    suspend fun deleteById(id: Long)
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(rules: List<BlockRule>)
-
-    @Query("SELECT * FROM block_rules WHERE pattern LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%' ORDER BY created_at DESC")
-    suspend fun searchRules(query: String): List<BlockRule>
 }
