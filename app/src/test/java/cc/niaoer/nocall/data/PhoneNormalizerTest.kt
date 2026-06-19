@@ -6,7 +6,7 @@ import org.junit.Test
 class PhoneNormalizerTest {
     @Test
     fun normalize_stripsPlusSpacesHyphensParens() {
-        // Digits-only keeps the country code 86; only non-digits are stripped.
+        // Country code digits are preserved; only non-digit characters like +, spaces, and hyphens are stripped.
         assertEquals("8613800138000", normalizePhone("+86 138-0013-8000"))
     }
 

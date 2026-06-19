@@ -64,6 +64,8 @@ fun WhitelistScreen(
     val context = LocalContext.current
     val entries by viewModel.entries.collectAsStateWithLifecycle()
     var showAddDialog by remember { mutableStateOf(false) }
+    var addDialogPhone by remember { mutableStateOf("") }
+    var addDialogNote by remember { mutableStateOf("") }
     var contactsPermissionGranted by remember {
         mutableStateOf(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -137,7 +139,7 @@ fun WhitelistScreen(
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(stringResource(R.string.enable_contacts_whitelist))
+                            Text(stringResource(R.string.enable_contacts_whitelist_button))
                         }
                     }
                 }
@@ -145,7 +147,9 @@ fun WhitelistScreen(
 
             if (entries.isEmpty()) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -174,24 +178,22 @@ fun WhitelistScreen(
     }
 
     if (showAddDialog) {
-        var phone by remember { mutableStateOf("") }
-        var note by remember { mutableStateOf("") }
         AlertDialog(
             onDismissRequest = { showAddDialog = false },
             title = { Text(stringResource(R.string.whitelist_add)) },
             text = {
                 Column {
                     OutlinedTextField(
-                        value = phone,
-                        onValueChange = { phone = it },
+                        value = addDialogPhone,
+                        onValueChange = { addDialogPhone = it },
                         label = { Text(stringResource(R.string.whitelist_number)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = note,
-                        onValueChange = { note = it },
+                        value = addDialogNote,
+                        onValueChange = { addDialogNote = it },
                         label = { Text(stringResource(R.string.whitelist_note)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
@@ -200,7 +202,9 @@ fun WhitelistScreen(
             },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.add(phone, note)
+                    viewModel.add(addDialogPhone, addDialogNote)
+                    addDialogPhone = ""
+                    addDialogNote = ""
                     showAddDialog = false
                 }) { Text(stringResource(R.string.whitelist_add)) }
             },

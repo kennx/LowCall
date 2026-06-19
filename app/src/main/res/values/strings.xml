@@ -51,6 +51,7 @@
     <string name="whitelist_note">备注</string>
     <string name="enable_contacts_whitelist">启用通讯录白名单</string>
     <string name="enable_contacts_whitelist_message">允许读取通讯录，使通讯录中的号码自动放行</string>
+    <string name="enable_contacts_whitelist_button">授权访问</string>
     <string name="whitelist_add">添加</string>
     <string name="whitelist_cancel">取消</string>
     <string name="whitelist_added_toast">已加入白名单</string>

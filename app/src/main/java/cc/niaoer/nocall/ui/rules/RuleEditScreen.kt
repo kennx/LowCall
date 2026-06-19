@@ -60,6 +60,12 @@ fun RuleEditScreen(
         }
     }
 
+    LaunchedEffect(state.loadError) {
+        if (state.loadError) {
+            onNavigateBack()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(

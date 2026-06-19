@@ -181,13 +181,17 @@ private fun ActionChip(isBlocked: Boolean) {
         MaterialTheme.colorScheme.error
     else
         MaterialTheme.colorScheme.primary
+    val labelColor = if (isBlocked)
+        MaterialTheme.colorScheme.onError
+    else
+        MaterialTheme.colorScheme.onPrimary
 
     AssistChip(
         onClick = {},
         label = { Text(label) },
         colors = AssistChipDefaults.assistChipColors(
             containerColor = containerColor,
-            labelColor = MaterialTheme.colorScheme.onError
+            labelColor = labelColor
         )
     )
 }

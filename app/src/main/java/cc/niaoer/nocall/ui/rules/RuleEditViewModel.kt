@@ -19,7 +19,8 @@ data class RuleEditUiState(
     val isNew: Boolean = true,
     val saved: Boolean = false,
     val showRegexSuggestion: Boolean = false,
-    val patternError: RulePatternError? = null
+    val patternError: RulePatternError? = null,
+    val loadError: Boolean = false
 )
 
 class RuleEditViewModel(application: Application) : AndroidViewModel(application) {
@@ -42,6 +43,8 @@ class RuleEditViewModel(application: Application) : AndroidViewModel(application
                     enabled = rule.enabled,
                     isNew = false
                 )
+            } else {
+                _uiState.value = RuleEditUiState(loadError = true)
             }
         }
     }

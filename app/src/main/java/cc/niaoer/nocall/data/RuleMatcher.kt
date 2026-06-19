@@ -1,5 +1,6 @@
 package cc.niaoer.nocall.data
 
+import android.util.Log
 import cc.niaoer.nocall.data.model.BlockRule
 import cc.niaoer.nocall.data.model.RuleType
 
@@ -27,6 +28,8 @@ class RuleMatcher {
                 RuleType.WILDCARD -> wildcardToRegex(rule.pattern).matches(phoneNumber)
                 RuleType.REGEX -> runCatching {
                     Regex(rule.pattern).matches(phoneNumber)
+                }.onFailure { e ->
+                    Log.w("RuleMatcher", "Invalid regex pattern: ${rule.pattern}", e)
                 }.getOrDefault(false)
             }
         }

@@ -3,15 +3,22 @@ package cc.niaoer.nocall.service
 import android.os.Build
 import android.telecom.Call
 import android.telecom.CallScreeningService
+import android.util.Log
 import androidx.annotation.RequiresApi
 import cc.niaoer.nocall.NoCallApplication
 import cc.niaoer.nocall.data.model.CallAction
 import cc.niaoer.nocall.data.model.CallLog
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 
 @RequiresApi(Build.VERSION_CODES.N)
 class BlockingCallScreeningService : CallScreeningService() {
+
+    companion object {
+        private const val TAG = "BlockingCallScreening"
+        private const val CONTACT_LOOKUP_TIMEOUT_MS = 500L
+    }
 
     override fun onScreenCall(details: Call.Details) {
         val phoneNumber = details.handle?.schemeSpecificPart
@@ -21,11 +28,20 @@ class BlockingCallScreeningService : CallScreeningService() {
 
         val container = (application as NoCallApplication).appContainer
 
+        // CallScreeningService callbacks run on a binder thread and must complete
+        // before the system can respond to the call. runBlocking is used here
+        // because the screening decision must be synchronous; the work inside
+        // is bounded by a timeout on the contacts lookup to avoid ANR.
         runBlocking {
-            // Whitelist has absolute priority: table entry or live contact match.
             val normalized = cc.niaoer.nocall.data.normalizePhone(phoneNumber)
+
+            // Whitelist has absolute priority: table entry or live contact match.
+            // Contact lookup is wrapped with a timeout to avoid blocking the
+            // binder thread if the ContactsProvider is slow or unresponsive.
             val inWhitelist = container.whitelistDao.exists(normalized) ||
-                container.contactLookup.isInContacts(phoneNumber)
+                withTimeoutOrNull(CONTACT_LOOKUP_TIMEOUT_MS) {
+                    container.contactLookup.isInContacts(phoneNumber)
+                } ?: false
 
             if (inWhitelist) {
                 container.callLogDao.insert(
