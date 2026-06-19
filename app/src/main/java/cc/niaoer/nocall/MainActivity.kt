@@ -17,10 +17,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PlaylistAddCheck
+import androidx.compose.material.icons.filled.Rule
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,12 +41,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import cc.niaoer.nocall.ui.history.CallHistoryScreen
+import cc.niaoer.nocall.ui.home.HomeScreen
 import cc.niaoer.nocall.ui.navigation.NavRoutes
 import cc.niaoer.nocall.ui.rules.RuleEditScreen
 import cc.niaoer.nocall.ui.rules.RulesScreen
@@ -74,12 +89,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val screeningEnabled by isScreeningEnabled.collectAsState()
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        if (!screeningEnabled) {
-                            SetupBanner(onSetup = { requestScreeningRole() })
-                        }
-                        NoCallNavHost()
-                    }
+                    NoCallApp(screeningEnabled = screeningEnabled, onSetup = { requestScreeningRole() })
                 }
             }
         }
@@ -123,6 +133,60 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun NoCallApp(screeningEnabled: Boolean, onSetup: () -> Unit) {
+    val navController = rememberNavController()
+
+    val bottomNavItems = listOf(
+        NavItem(NavRoutes.HOME, R.string.home_title, Icons.Default.Home),
+        NavItem(NavRoutes.RULES, R.string.rules_title, Icons.Default.Rule),
+        NavItem(NavRoutes.HISTORY, R.string.history_title, Icons.Default.History),
+        NavItem(NavRoutes.WHITELIST, R.string.whitelist_title, Icons.Default.PlaylistAddCheck),
+        NavItem(NavRoutes.SETTINGS, R.string.settings_title, Icons.Default.Settings)
+    )
+
+    Scaffold(
+        bottomBar = {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            val showBottomBar = bottomNavItems.any { it.route == currentDestination?.route }
+            if (showBottomBar) {
+                NavigationBar {
+                    bottomNavItems.forEach { item ->
+                        NavigationBarItem(
+                            icon = { Icon(item.icon, contentDescription = null) },
+                            label = { Text(stringResource(item.labelRes)) },
+                            selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
+                            onClick = {
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    ) { paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            if (!screeningEnabled) {
+                SetupBanner(onSetup = onSetup)
+            }
+            NoCallNavHost(navController = navController)
+        }
+    }
+}
+
+private data class NavItem(
+    val route: String,
+    val labelRes: Int,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector
+)
+
+@Composable
 fun SetupBanner(onSetup: () -> Unit) {
     Card(
         modifier = Modifier
@@ -164,13 +228,19 @@ fun SetupBanner(onSetup: () -> Unit) {
 }
 
 @Composable
-fun NoCallNavHost() {
-    val navController = rememberNavController()
-
+fun NoCallNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.RULES
+        startDestination = NavRoutes.HOME
     ) {
+        composable(NavRoutes.HOME) {
+            HomeScreen(
+                onNavigateToRules = { navController.navigate(NavRoutes.RULES) },
+                onNavigateToHistory = { navController.navigate(NavRoutes.HISTORY) },
+                onNavigateToTest = { navController.navigate(NavRoutes.RULE_TEST) },
+                onNavigateToAddRule = { navController.navigate(NavRoutes.RULE_ADD) }
+            )
+        }
         composable(NavRoutes.RULES) {
             RulesScreen(
                 onAddRule = { navController.navigate(NavRoutes.RULE_ADD) },
