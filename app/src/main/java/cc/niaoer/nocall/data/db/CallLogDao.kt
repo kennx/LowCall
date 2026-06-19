@@ -17,4 +17,13 @@ interface CallLogDao {
 
     @Query("DELETE FROM call_logs")
     suspend fun deleteAll()
+
+    @Query("SELECT COUNT(*) FROM call_logs WHERE action = 'BLOCKED'")
+    suspend fun getTotalBlockedCount(): Int
+
+    @Query("SELECT COUNT(*) FROM call_logs WHERE action = 'BLOCKED' AND timestamp >= :startOfDay")
+    suspend fun getBlockedCountSince(startOfDay: Long): Int
+
+    @Query("SELECT * FROM call_logs WHERE action = 'BLOCKED' ORDER BY timestamp DESC LIMIT :limit")
+    suspend fun getRecentBlocked(limit: Int): List<CallLog>
 }

@@ -37,4 +37,7 @@ interface BlockRuleDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(rules: List<BlockRule>)
+
+    @Query("SELECT * FROM block_rules WHERE pattern LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%' ORDER BY created_at DESC")
+    suspend fun searchRules(query: String): List<BlockRule>
 }
