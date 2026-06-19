@@ -1,5 +1,6 @@
 package cc.niaoer.nocall.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -131,6 +132,7 @@ private fun HeroSection(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
+            .background(MaterialTheme.colorScheme.primary)
             .padding(horizontal = 24.dp, vertical = 20.dp)
     ) {
         Text(

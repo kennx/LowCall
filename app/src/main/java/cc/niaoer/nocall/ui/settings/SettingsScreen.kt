@@ -92,22 +92,23 @@ fun SettingsScreen(
                 }
             )
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-        ) {
-            // About card
-            Card(
+        ) { paddingValues ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
+                // About card
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -156,7 +157,7 @@ fun SettingsScreen(
                 }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Section: Rules and Data
             SectionTitle("规则与数据")
@@ -214,7 +215,7 @@ private fun SectionTitle(title: String) {
         text = title,
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
     )
 }
 
@@ -233,7 +234,8 @@ private fun SettingItem(
         enabled = onClick != null,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        )
+        ),
+        modifier = Modifier.padding(vertical = 4.dp)
     ) {
         Row(
             modifier = Modifier
