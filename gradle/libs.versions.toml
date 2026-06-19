@@ -12,7 +12,6 @@ ksp = "2.3.9"
 room = "2.8.4"
 navigation = "2.9.8"
 lifecycle = "2.10.0"
-gson = "2.14.0"
 datastorePreferences = "1.1.7"
 
 [libraries]
@@ -36,7 +35,6 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
