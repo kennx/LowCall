@@ -1,7 +1,6 @@
 package cc.niaoer.nocall
 
 import android.content.Context
-import cc.niaoer.nocall.data.ContactLookup
 import cc.niaoer.nocall.data.db.AppDatabase
 import cc.niaoer.nocall.data.db.BlockRuleDao
 import cc.niaoer.nocall.data.db.CallLogDao
@@ -14,5 +13,4 @@ class AppContainer(context: Context) {
     val callLogDao: CallLogDao = database.callLogDao()
     val whitelistDao: WhitelistDao = database.whitelistDao()
     val settingsRepository: SettingsRepository = SettingsRepository(context.applicationContext)
-    val contactLookup: ContactLookup = ContactLookup(context.applicationContext)
 }

@@ -6,6 +6,7 @@ import android.telecom.CallScreeningService
 import android.util.Log
 import androidx.annotation.RequiresApi
 import cc.niaoer.nocall.NoCallApplication
+import cc.niaoer.nocall.data.isInContacts
 import cc.niaoer.nocall.data.match
 import cc.niaoer.nocall.data.model.CallAction
 import cc.niaoer.nocall.data.model.CallLog
@@ -41,7 +42,7 @@ class BlockingCallScreeningService : CallScreeningService() {
             // binder thread if the ContactsProvider is slow or unresponsive.
             val inWhitelist = container.whitelistDao.exists(normalized) ||
                 withTimeoutOrNull(CONTACT_LOOKUP_TIMEOUT_MS) {
-                    container.contactLookup.isInContacts(phoneNumber)
+                    isInContacts(this@BlockingCallScreeningService, phoneNumber)
                 } ?: false
 
             if (inWhitelist) {
