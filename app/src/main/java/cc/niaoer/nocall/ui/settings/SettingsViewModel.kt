@@ -12,10 +12,8 @@ import cc.niaoer.nocall.data.model.BlockRule
 import cc.niaoer.nocall.data.model.RuleType
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
@@ -31,9 +29,6 @@ data class ExportRule(
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as NoCallApplication).appContainer
     private val gson = Gson()
-
-    private val _isExporting = MutableStateFlow(false)
-    val isExporting: StateFlow<Boolean> = _isExporting.asStateFlow()
 
     private val settingsRepository = container.settingsRepository
 
@@ -63,11 +58,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 context.contentResolver.openOutputStream(uri)?.use { outputStream ->
                     outputStream.write(json.toByteArray())
                 }
-                _isExporting.value = false
                 Toast.makeText(context, context.getString(R.string.export_success), Toast.LENGTH_SHORT)
                     .show()
             } catch (e: Exception) {
-                _isExporting.value = false
                 Toast.makeText(getApplication(), e.message ?: "导出失败", Toast.LENGTH_SHORT).show()
             }
         }
