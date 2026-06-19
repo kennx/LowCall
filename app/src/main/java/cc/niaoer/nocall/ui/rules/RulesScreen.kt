@@ -67,7 +67,6 @@ fun RulesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(56.dp),
                 title = {
                     if (uiState.isSearching) {
                         TextField(

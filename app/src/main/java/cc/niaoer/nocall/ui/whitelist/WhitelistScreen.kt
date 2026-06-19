@@ -91,7 +91,6 @@ fun WhitelistScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(56.dp),
                 title = { Text(stringResource(R.string.whitelist_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface

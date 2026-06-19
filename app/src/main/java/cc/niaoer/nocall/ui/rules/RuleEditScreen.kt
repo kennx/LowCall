@@ -71,7 +71,6 @@ fun RuleEditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(56.dp),
                 title = {
                     Text(
                         if (state.isNew) stringResource(R.string.add_rule)
