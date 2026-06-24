@@ -6,10 +6,11 @@
 
 在来电拦截流程中，为每个来电查询归属地（省份+城市）和运营商，并展示在：
 
-- **系统来电面板**（已放行来电）：号码下方副标题显示归属地信息
-- **拦截通知**：通知内容增加归属地信息
+- **拦截通知**（heads-up）：通知内容增加归属地信息，来电时弹出
 - **首页「最近拦截」卡片**：号码下方显示归属地+运营商
 - **通话记录列表**：每条记录增加归属地+运营商信息
+
+> **已知限制:** `CallResponse.Builder` 不提供 `setCallerId()` 方法。Android 的 caller ID 机制需要通过启动 Activity 来实现调用者识别覆层，不在本需求范围内。
 
 ## 2. 数据源
 
@@ -68,27 +69,23 @@ PhoneAttribution.kt  (新增 — 顶层函数)
   │
   ├─► BlockingCallScreeningService.onScreenCall()
   │     │
-  │     ├─ 已放行 (ALLOWED):
-  │     │   CallResponse.Builder()
-  │     │     .setCallerId("广东深圳 · 中国移动")  // API 29+
-  │     │     .build()
-  │     │   → 系统来电面板号码下方显示
+  │     ├─ ALL calls: lookup attribution, persist to CallLog
   │     │
-  │     └─ 已拦截 (BLOCKED):
-  │         归属地信息写入 CallLog + 系统通知
-  │         （来电面板不显示，被 setDisallowCall 抑制）
+  │     ├─ BLOCKED: attribution shown in heads-up notification
+  │     │           (notification fires during incoming call)
+  │     │
+  │     └─ ALLOWED: attribution stored in CallLog for history display
   │
   └─► CallLog (新增字段)
         location: String?  —   "广东深圳"  （省份+城市拼接）
         carrier: String?   —   "中国移动"
 ```
 
-### setCallerId 注意事项
+### 关于来电面板上的 Caller ID
 
-- `CallResponse.Builder.setCallerId()` 要求 API 29+
-- `< API 29` 时忽略该调用（不会崩溃）
-- 该文字会显示在系统来电界面号码下方（原先是空白的副标题位置）
-- 无需额外权限，无需用户设置
+`CallResponse.Builder` 不提供 `setCallerId()` 方法（经 Android 源码验证该 API 不存在）。
+在系统来电面板上显示自定义文字需要通过 `InCallService` 或 Activity 覆层实现，不在本需求范围内。
+归属地信息改为通过 heads-up 通知（拦截时）和历史记录展示。
 
 ## 4. 改动清单
 
