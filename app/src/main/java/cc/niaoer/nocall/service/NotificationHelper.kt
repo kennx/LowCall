@@ -35,6 +35,8 @@ object NotificationHelper {
     fun showBlockedCallNotification(
         context: Context,
         phoneNumber: String,
+        location: String?,
+        carrier: String?,
         ruleDescription: String
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -51,19 +53,33 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val attributionPart = buildString {
+            if (location != null) append(location)
+            if (location != null && carrier != null) append(" · ")
+            if (carrier != null) append(carrier)
+        }
+
+        val contentText = if (attributionPart.isNotEmpty()) {
+            "号码: $phoneNumber · $attributionPart"
+        } else {
+            "号码: $phoneNumber"
+        }
+
         val description = if (ruleDescription.isNotBlank()) {
             "规则: $ruleDescription"
         } else {
             "已拦截来电"
         }
 
+        val bigText = "$contentText\n$description"
+
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("拦截来电")
-            .setContentText("号码: $phoneNumber")
+            .setContentText(contentText)
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText("号码: $phoneNumber\n$description")
+                    .bigText(bigText)
             )
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)

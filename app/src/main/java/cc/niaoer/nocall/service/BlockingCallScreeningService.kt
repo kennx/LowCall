@@ -30,16 +30,13 @@ class BlockingCallScreeningService : CallScreeningService() {
 
         val container = (application as NoCallApplication).appContainer
 
-        // CallScreeningService callbacks run on a binder thread and must complete
-        // before the system can respond to the call. runBlocking is used here
-        // because the screening decision must be synchronous; the work inside
-        // is bounded by a timeout on the contacts lookup to avoid ANR.
         runBlocking {
+            val attribution = container.phoneAttribution.lookup(phoneNumber)
+            val location = attribution?.let { "${it.province}${it.city}" }
+            val carrier = attribution?.carrier
+
             val normalized = cc.niaoer.nocall.data.normalizePhone(phoneNumber)
 
-            // Whitelist has absolute priority: table entry or live contact match.
-            // Contact lookup is wrapped with a timeout to avoid blocking the
-            // binder thread if the ContactsProvider is slow or unresponsive.
             val inWhitelist = container.whitelistDao.exists(normalized) ||
                 withTimeoutOrNull(CONTACT_LOOKUP_TIMEOUT_MS) {
                     isInContacts(this@BlockingCallScreeningService, phoneNumber)
@@ -49,6 +46,8 @@ class BlockingCallScreeningService : CallScreeningService() {
                 container.callLogDao.insert(
                     CallLog(
                         phoneNumber = phoneNumber,
+                        location = location,
+                        carrier = carrier,
                         action = CallAction.ALLOWED,
                         timestamp = System.currentTimeMillis()
                     )
@@ -66,6 +65,8 @@ class BlockingCallScreeningService : CallScreeningService() {
                         phoneNumber = phoneNumber,
                         matchedRuleId = matched.id,
                         matchedRulePattern = matched.pattern,
+                        location = location,
+                        carrier = carrier,
                         action = CallAction.BLOCKED,
                         timestamp = System.currentTimeMillis()
                     )
@@ -75,9 +76,11 @@ class BlockingCallScreeningService : CallScreeningService() {
                 if (notificationEnabled) {
                     val ruleDesc = matched.description.ifBlank { matched.pattern }
                     NotificationHelper.showBlockedCallNotification(
-                        this@BlockingCallScreeningService,
-                        phoneNumber,
-                        ruleDesc
+                        context = this@BlockingCallScreeningService,
+                        phoneNumber = phoneNumber,
+                        location = location,
+                        carrier = carrier,
+                        ruleDescription = ruleDesc
                     )
                 }
                 val response = CallResponse.Builder()
@@ -91,6 +94,8 @@ class BlockingCallScreeningService : CallScreeningService() {
                 container.callLogDao.insert(
                     CallLog(
                         phoneNumber = phoneNumber,
+                        location = location,
+                        carrier = carrier,
                         action = CallAction.ALLOWED,
                         timestamp = System.currentTimeMillis()
                     )
