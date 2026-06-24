@@ -68,4 +68,5 @@
     <string name="quick_test_hint">验证号码匹配</string>
     <string name="quick_add">添加规则</string>
     <string name="quick_add_hint">新建拦截规则</string>
+    <string name="attribution_format">%1$s · %2$s</string>
 </resources>
