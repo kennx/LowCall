@@ -13,14 +13,14 @@
 
 ## 2. 数据源
 
-使用 `xluohome/phonedata` 项目的 `phone.dat` 二进制数据库，纯离线查询。
+使用 `phone.dat` 二进制数据库（与 `xluohome/phonedata` 相同格式），纯离线查询。
 
-- **来源**: https://github.com/xluohome/phonedata
-- **文件**: `phone.dat`（约 3.9 MB），捆绑于 `app/src/main/assets/phone.dat`
-- **格式**: 自定义二进制格式，~50 万条中国手机号段前缀记录
+- **数据来源**: [EeeMt/phone-number-geo](https://github.com/EeeMt/phone-number-geo)（数据版本 `202502`，同步自 `pangongzi/phone`）
+- **文件**: `phone.dat`（约 4.7 MB），捆绑于 `app/src/main/assets/phone.dat`
+- **格式**: 自定义二进制格式（与 `xluohome/phonedata` 兼容），~50 万条中国手机号段前缀记录
 - **覆盖**: 中国移动/联通/电信/广电及虚拟运营商
 - **查询性能**: 纳秒级二进制查找（二分搜索）
-- **数据新鲜度**: 截至 2023 年 2 月
+- **数据新鲜度**: 截至 2025 年 2 月
 
 ### 二进制格式规范
 
@@ -42,9 +42,11 @@ index   …       Index area: array of 9-byte entries
 | 1 | 中国移动 |
 | 2 | 中国联通 |
 | 3 | 中国电信 |
-| 4 | 中国联通虚拟运营商 |
-| 5 | 中国电信虚拟运营商 |
+| 4 | 中国电信虚拟运营商 |
+| 5 | 中国联通虚拟运营商 |
 | 6 | 中国移动虚拟运营商 |
+| 7 | 中国广电 |
+| 8 | 中国广电虚拟运营商 |
 
 ### 二分查找算法
 
@@ -113,7 +115,7 @@ PhoneAttribution.kt  (新增 — 顶层函数)
 
 | 文件 | 来源 |
 |------|------|
-| `app/src/main/assets/phone.dat` | https://github.com/xluohome/phonedata/raw/master/phone.dat |
+| `app/src/main/assets/phone.dat` | https://github.com/EeeMt/phone-number-geo/raw/master/src/main/resources/phone.dat |
 
 ## 5. 数据模型变更
 
