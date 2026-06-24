@@ -13,7 +13,7 @@ import cc.niaoer.nocall.data.model.WhitelistEntry
 
 @Database(
     entities = [BlockRule::class, CallLog::class, WhitelistEntry::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -43,13 +43,20 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `call_logs` ADD COLUMN `location` TEXT")
+                db.execSQL("ALTER TABLE `call_logs` ADD COLUMN `carrier` TEXT")
+            }
+        }
+
         fun create(context: Context): AppDatabase {
             return Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
                 "nocall.db"
             )
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .fallbackToDestructiveMigration()
                 .build()
         }

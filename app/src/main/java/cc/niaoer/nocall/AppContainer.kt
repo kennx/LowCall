@@ -1,6 +1,7 @@
 package cc.niaoer.nocall
 
 import android.content.Context
+import cc.niaoer.nocall.data.PhoneAttribution
 import cc.niaoer.nocall.data.db.AppDatabase
 import cc.niaoer.nocall.data.db.BlockRuleDao
 import cc.niaoer.nocall.data.db.CallLogDao
@@ -13,4 +14,8 @@ class AppContainer(context: Context) {
     val callLogDao: CallLogDao = database.callLogDao()
     val whitelistDao: WhitelistDao = database.whitelistDao()
     val settingsRepository: SettingsRepository = SettingsRepository(context.applicationContext)
+    val phoneAttribution: PhoneAttribution by lazy {
+        val data = context.assets.open("phone.dat").use { it.readBytes() }
+        PhoneAttribution(data)
+    }
 }

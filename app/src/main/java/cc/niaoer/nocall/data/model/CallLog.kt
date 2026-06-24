@@ -17,5 +17,7 @@ data class CallLog(
     @ColumnInfo(name = "matched_rule_id") val matchedRuleId: Long? = null,
     @ColumnInfo(name = "matched_rule_pattern") val matchedRulePattern: String? = null,
     @ColumnInfo(name = "action") val action: CallAction,
-    @ColumnInfo(name = "timestamp") val timestamp: Long = System.currentTimeMillis()
+    @ColumnInfo(name = "timestamp") val timestamp: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = "location") val location: String? = null,
+    @ColumnInfo(name = "carrier") val carrier: String? = null
 )
