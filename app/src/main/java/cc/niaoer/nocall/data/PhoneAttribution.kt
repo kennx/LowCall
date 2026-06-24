@@ -60,14 +60,14 @@ class PhoneAttribution(data: ByteArray) {
 
     private fun readRecord(offset: Int): String? {
         buffer.position(offset)
-        val sb = StringBuilder()
+        val bytes = mutableListOf<Byte>()
         while (true) {
             val b = buffer.get()
             if (b == 0.toByte()) break
-            sb.append(b.toInt().toChar())
+            bytes.add(b)
         }
-        val result = sb.toString()
-        return result.ifEmpty { null }
+        if (bytes.isEmpty()) return null
+        return String(bytes.toByteArray(), Charsets.UTF_8)
     }
 
     private fun ispToCarrier(code: Int): String = when (code) {
