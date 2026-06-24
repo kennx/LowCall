@@ -13,20 +13,20 @@
 ### Task 1: Regex classification and validation
 
 **Files:**
-- Modify: `app/src/test/java/cc/niaoer/nocall/data/RuleMatcherTest.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/RuleMatcher.kt`
+- Modify: `app/src/test/java/cc/niaoer/lowcall/data/RuleMatcherTest.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/RuleMatcher.kt`
 
 - [ ] Add failing tests proving `138.*` and `(138).*` are regex-shaped, `+86*` remains a wildcard, valid regex compiles, and `[0-9` is rejected.
-- [ ] Run `./gradlew :app:testDebugUnitTest --tests 'cc.niaoer.nocall.data.RuleMatcherTest'`; expect the new assertions to fail.
+- [ ] Run `./gradlew :app:testDebugUnitTest --tests 'cc.niaoer.lowcall.data.RuleMatcherTest'`; expect the new assertions to fail.
 - [ ] Extend `looksLikeRegex()` with high-signal `.*`, `.+`, and grouping detection; add a pure `isValidRegex(pattern)` compiler check.
 - [ ] Re-run the focused test; expect all matcher tests to pass.
 
 ### Task 2: Editor save decisions
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditDecision.kt`
-- Create: `app/src/test/java/cc/niaoer/nocall/ui/rules/RuleEditDecisionTest.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditViewModel.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditDecision.kt`
+- Create: `app/src/test/java/cc/niaoer/lowcall/ui/rules/RuleEditDecisionTest.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditViewModel.kt`
 
 - [ ] Add failing pure JUnit tests for direct invalid REGEX rejection, invalid wildcard-to-regex confirmation, cancellation without persistence, explicit wildcard persistence, and valid regex persistence.
 - [ ] Run the focused decision test; expect failures because the decision model does not exist.
@@ -37,7 +37,7 @@
 ### Task 3: Compose dialog and validation UI
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditScreen.kt`
 - Modify: `app/src/main/res/values/strings.xml`
 
 - [ ] Add the invalid-regex resource string and display the state error through `OutlinedTextField.isError` plus supporting text.
@@ -59,9 +59,9 @@
 **Files:** No production file changes expected.
 
 - [ ] Start the `Pixel_7` AVD and wait for boot completion.
-- [ ] Install the same debug APK, set NoCall as the test/default call-screening app, and create deterministic EXACT, WILDCARD, and REGEX rules.
+- [ ] Install the same debug APK, set LowCall as the test/default call-screening app, and create deterministic EXACT, WILDCARD, and REGEX rules.
 - [ ] Trigger matching and non-matching incoming calls with the emulator console GSM command.
-- [ ] Use Telecom dumpsys, logcat, and NoCall history/Room state to verify blocked versus allowed outcomes and absence of process crashes.
+- [ ] Use Telecom dumpsys, logcat, and LowCall history/Room state to verify blocked versus allowed outcomes and absence of process crashes.
 - [ ] Stop test calls and restore temporary Telecom overrides.
 
 ### Task 6: Final verification

@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "NoCall"
+rootProject.name = "LowCall"
 include(":app")

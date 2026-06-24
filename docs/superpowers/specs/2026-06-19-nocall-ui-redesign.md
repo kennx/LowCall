@@ -1,4 +1,4 @@
-# NoCall UI Redesign — Design Spec
+# LowCall UI Redesign — Design Spec
 
 > **Date:** 2026-06-19  
 > **Source:** OpenDesign project `4a0fdbd6-89b2-41f8-b94b-128a6deb4351`  
@@ -8,7 +8,7 @@
 
 ## Goal
 
-按照 OpenDesign 设计文件重新设计 NoCall 应用界面，保持现有功能不变，不添加未实现的功能。引入底部导航、首页、分类 Tab、搜索等交互增强。
+按照 OpenDesign 设计文件重新设计 LowCall 应用界面，保持现有功能不变，不添加未实现的功能。引入底部导航、首页、分类 Tab、搜索等交互增强。
 
 ---
 

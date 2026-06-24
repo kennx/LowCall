@@ -81,12 +81,12 @@ git commit -m "feat(ui): add attribution_format string resource"
 ### Task 3: Create PhoneAttribution lookup engine
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/data/PhoneAttribution.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/PhoneAttribution.kt`
 
 - [ ] **Step 1: Create PhoneAttribution.kt**
 
 ```kotlin
-package cc.niaoer.nocall.data
+package cc.niaoer.lowcall.data
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -179,7 +179,7 @@ class PhoneAttribution(data: ByteArray) {
 - [ ] **Step 2: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/PhoneAttribution.kt
+git add app/src/main/java/cc/niaoer/lowcall/data/PhoneAttribution.kt
 git commit -m "feat(data): add PhoneAttribution offline phone.dat lookup engine"
 ```
 
@@ -188,12 +188,12 @@ git commit -m "feat(data): add PhoneAttribution offline phone.dat lookup engine"
 ### Task 4: Write unit tests for PhoneAttribution
 
 **Files:**
-- Create: `app/src/test/java/cc/niaoer/nocall/data/PhoneAttributionTest.kt`
+- Create: `app/src/test/java/cc/niaoer/lowcall/data/PhoneAttributionTest.kt`
 
 - [ ] **Step 1: Create test class**
 
 ```kotlin
-package cc.niaoer.nocall.data
+package cc.niaoer.lowcall.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -313,14 +313,14 @@ class PhoneAttributionTest {
 - [ ] **Step 2: Run tests**
 
 ```bash
-./gradlew :app:testDebugUnitTest --tests "cc.niaoer.nocall.data.PhoneAttributionTest"
+./gradlew :app:testDebugUnitTest --tests "cc.niaoer.lowcall.data.PhoneAttributionTest"
 ```
 Expected: All 7 tests PASS
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/test/java/cc/niaoer/nocall/data/PhoneAttributionTest.kt
+git add app/src/test/java/cc/niaoer/lowcall/data/PhoneAttributionTest.kt
 git commit -m "test(data): add PhoneAttribution unit tests"
 ```
 
@@ -329,7 +329,7 @@ git commit -m "test(data): add PhoneAttribution unit tests"
 ### Task 5: Add location/carrier fields to CallLog entity
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/model/CallLog.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/model/CallLog.kt`
 
 - [ ] **Step 1: Add new fields**
 
@@ -357,7 +357,7 @@ data class CallLog(
 - [ ] **Step 2: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/model/CallLog.kt
+git add app/src/main/java/cc/niaoer/lowcall/data/model/CallLog.kt
 git commit -m "feat(data): add location and carrier fields to CallLog entity"
 ```
 
@@ -366,7 +366,7 @@ git commit -m "feat(data): add location and carrier fields to CallLog entity"
 ### Task 6: Database migration v2 → v3
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/db/AppDatabase.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/db/AppDatabase.kt`
 
 - [ ] **Step 1: Add migration and bump version**
 
@@ -392,7 +392,7 @@ private val MIGRATION_2_3 = object : Migration(2, 3) {
 - [ ] **Step 2: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/db/AppDatabase.kt
+git add app/src/main/java/cc/niaoer/lowcall/data/db/AppDatabase.kt
 git commit -m "feat(db): add v2 to v3 migration for location and carrier columns"
 ```
 
@@ -401,7 +401,7 @@ git commit -m "feat(db): add v2 to v3 migration for location and carrier columns
 ### Task 7: Register PhoneAttribution in AppContainer
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/AppContainer.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/AppContainer.kt`
 
 - [ ] **Step 1: Add phoneAttribution property**
 
@@ -417,15 +417,15 @@ val phoneAttribution: PhoneAttribution by lazy {
 Full file after edit:
 
 ```kotlin
-package cc.niaoer.nocall
+package cc.niaoer.lowcall
 
 import android.content.Context
-import cc.niaoer.nocall.data.PhoneAttribution
-import cc.niaoer.nocall.data.db.AppDatabase
-import cc.niaoer.nocall.data.db.BlockRuleDao
-import cc.niaoer.nocall.data.db.CallLogDao
-import cc.niaoer.nocall.data.db.WhitelistDao
-import cc.niaoer.nocall.data.prefs.SettingsRepository
+import cc.niaoer.lowcall.data.PhoneAttribution
+import cc.niaoer.lowcall.data.db.AppDatabase
+import cc.niaoer.lowcall.data.db.BlockRuleDao
+import cc.niaoer.lowcall.data.db.CallLogDao
+import cc.niaoer.lowcall.data.db.WhitelistDao
+import cc.niaoer.lowcall.data.prefs.SettingsRepository
 
 class AppContainer(context: Context) {
     val database: AppDatabase = AppDatabase.create(context)
@@ -443,7 +443,7 @@ class AppContainer(context: Context) {
 - [ ] **Step 2: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/AppContainer.kt
+git add app/src/main/java/cc/niaoer/lowcall/AppContainer.kt
 git commit -m "feat(di): register PhoneAttribution in AppContainer"
 ```
 
@@ -452,7 +452,7 @@ git commit -m "feat(di): register PhoneAttribution in AppContainer"
 ### Task 8: Update BlockingCallScreeningService
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/service/BlockingCallScreeningService.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/service/BlockingCallScreeningService.kt`
 
 - [ ] **Step 1: Add attribution lookup and setCallerId**
 
@@ -465,18 +465,18 @@ The key changes:
 Replace `BlockingCallScreeningService.kt` with:
 
 ```kotlin
-package cc.niaoer.nocall.service
+package cc.niaoer.lowcall.service
 
 import android.os.Build
 import android.telecom.Call
 import android.telecom.CallScreeningService
 import android.util.Log
 import androidx.annotation.RequiresApi
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.isInContacts
-import cc.niaoer.nocall.data.match
-import cc.niaoer.nocall.data.model.CallAction
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.isInContacts
+import cc.niaoer.lowcall.data.match
+import cc.niaoer.lowcall.data.model.CallAction
+import cc.niaoer.lowcall.data.model.CallLog
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
@@ -495,14 +495,14 @@ class BlockingCallScreeningService : CallScreeningService() {
             return
         }
 
-        val container = (application as NoCallApplication).appContainer
+        val container = (application as LowCallApplication).appContainer
 
         runBlocking {
             val attribution = container.phoneAttribution.lookup(phoneNumber)
             val location = attribution?.let { "${it.province}${it.city}" }
             val carrier = attribution?.carrier
 
-            val normalized = cc.niaoer.nocall.data.normalizePhone(phoneNumber)
+            val normalized = cc.niaoer.lowcall.data.normalizePhone(phoneNumber)
 
             val inWhitelist = container.whitelistDao.exists(normalized) ||
                 withTimeoutOrNull(CONTACT_LOOKUP_TIMEOUT_MS) {
@@ -600,7 +600,7 @@ class BlockingCallScreeningService : CallScreeningService() {
 - [ ] **Step 2: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/service/BlockingCallScreeningService.kt
+git add app/src/main/java/cc/niaoer/lowcall/service/BlockingCallScreeningService.kt
 git commit -m "feat(service): add caller attribution to screening and setCallerId"
 ```
 
@@ -609,7 +609,7 @@ git commit -m "feat(service): add caller attribution to screening and setCallerI
 ### Task 9: Update NotificationHelper
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/service/NotificationHelper.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/service/NotificationHelper.kt`
 
 - [ ] **Step 1: Add location/carrier parameters**
 
@@ -691,7 +691,7 @@ The full file after edit keeps all imports unchanged, only the function body cha
 - [ ] **Step 2: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/service/NotificationHelper.kt
+git add app/src/main/java/cc/niaoer/lowcall/service/NotificationHelper.kt
 git commit -m "feat(notification): display caller attribution in blocked call notification"
 ```
 
@@ -700,7 +700,7 @@ git commit -m "feat(notification): display caller attribution in blocked call no
 ### Task 10: Show attribution in HomeScreen RecentBlockedItem
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/home/HomeScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/home/HomeScreen.kt`
 
 - [ ] **Step 1: Add attribution line to RecentBlockedItem**
 
@@ -769,7 +769,7 @@ private fun RecentBlockedItem(log: CallLog) {
 - [ ] **Step 2: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/home/HomeScreen.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/home/HomeScreen.kt
 git commit -m "feat(ui): show caller attribution in home recent blocked cards"
 ```
 
@@ -778,7 +778,7 @@ git commit -m "feat(ui): show caller attribution in home recent blocked cards"
 ### Task 11: Show attribution in CallHistoryScreen CallLogItem
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryScreen.kt`
 
 - [ ] **Step 1: Add attribution line to CallLogItem**
 
@@ -840,7 +840,7 @@ Replace with:
 - [ ] **Step 2: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryScreen.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryScreen.kt
 git commit -m "feat(ui): show caller attribution in call history list"
 ```
 

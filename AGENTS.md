@@ -1,4 +1,4 @@
-# NoCall Agent Protocol (AI-Native)
+# LowCall Agent Protocol (AI-Native)
 
 <!-- Last updated: 2026-06-25 -->
 
@@ -7,49 +7,49 @@
 ## 1. System Architecture & Topological Map
 [Execution_Context]: Before modifying ANY file, you MUST cross-reference its path with this routing matrix to determine your exact permission boundaries.
 
-- `[Path: app/src/main/java/cc/niaoer/nocall/NoCallApplication.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/LowCallApplication.kt]`
   - STATUS: Application entry point. Initializes `AppContainer` in `onCreate()`. Exposes `appContainer` as `lateinit`.
-- `[Path: app/src/main/java/cc/niaoer/nocall/MainActivity.kt]`
-  - STATUS: Sole Activity. Hosts `NoCallNavHost` (8 routes), 5-tab bottom nav, call screening role management, notification permission request. Applies `enableEdgeToEdge()`. Contains `NoCallApp`, `SetupBanner`, `NoCallNavHost` composables.
+- `[Path: app/src/main/java/cc/niaoer/lowcall/MainActivity.kt]`
+  - STATUS: Sole Activity. Hosts `LowCallNavHost` (8 routes), 5-tab bottom nav, call screening role management, notification permission request. Applies `enableEdgeToEdge()`. Contains `LowCallApp`, `SetupBanner`, `LowCallNavHost` composables.
   - CONSTRAINT: `restoreState` is intentionally OMITTED from bottom-nav `navigate()` calls to prevent Navigation Compose from restoring wrong destination on tab switches.
-- `[Path: app/src/main/java/cc/niaoer/nocall/AppContainer.kt]`
-  - STATUS: Manual DI container. Holds `AppDatabase`, `BlockRuleDao`, `CallLogDao`, `WhitelistDao`, `SettingsRepository`. Created by `NoCallApplication`, accessed via `(application as NoCallApplication).appContainer`.
+- `[Path: app/src/main/java/cc/niaoer/lowcall/AppContainer.kt]`
+  - STATUS: Manual DI container. Holds `AppDatabase`, `BlockRuleDao`, `CallLogDao`, `WhitelistDao`, `SettingsRepository`. Created by `LowCallApplication`, accessed via `(application as LowCallApplication).appContainer`.
   - CONSTRAINT: This is the sole source of singleton dependencies. DO NOT introduce new dependency instantiation points elsewhere.
-- `[Path: app/src/main/java/cc/niaoer/nocall/data/RuleMatcher.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/data/RuleMatcher.kt]`
   - STATUS: Core matching engine. Top-level functions: `looksLikeRegex(pattern)`, `isValidRegex(pattern)`, `match(phoneNumber, rules)`. Iterates enabled rules (EXACT → WILDCARD → REGEX), returns first match or null.
   - CONSTRAINT: WILDCARD conversion (`*` → `.*`, `?` → `.`) happens inline in `match()`. REGEX patterns MUST be validated via `isValidRegex()` before insertion. DO NOT change match priority order without updating `RuleMatcherTest`.
-- `[Path: app/src/main/java/cc/niaoer/nocall/data/ContactLookup.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/data/ContactLookup.kt]`
   - STATUS: Top-level function `isInContacts(context, phoneNumber)` queries `ContactsContract` via LIKE matching on last 11 digits. Called from `BlockingCallScreeningService` with a 500ms timeout.
-- `[Path: app/src/main/java/cc/niaoer/nocall/data/PhoneNormalizer.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/data/PhoneNormalizer.kt]`
   - STATUS: Single top-level function `normalizePhone(raw)` strips all non-digit characters.
-- `[Path: app/src/main/java/cc/niaoer/nocall/data/db/.*]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/data/db/.*]`
   - STATUS: Room persistence layer. `AppDatabase` (v2, 3 entities: `BlockRule`, `CallLog`, `WhitelistEntry`). Three DAOs expose `Flow<List<T>>` for reactive reads and suspend functions for writes. `Converters` handles `RuleType`/`CallAction` enum serialization.
   - CONSTRAINT: Schema changes to entities MUST be backward-tolerant and MUST include a `Migration` object. `fallbackToDestructiveMigration()` is a last-resort safety net, NOT an excuse to skip writing migrations. New DAO methods returning `Flow` MUST use the `Flow` return type (not `LiveData`).
-- `[Path: app/src/main/java/cc/niaoer/nocall/data/model/.*]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/data/model/.*]`
   - STATUS: Room entity definitions. `BlockRule` (pattern, ruleType, enabled, description, createdAt), `CallLog` (phoneNumber, matchedRuleId, matchedRulePattern, action, timestamp), `WhitelistEntry` (phoneNumber, normalizedNumber, note, createdAt).
   - CONSTRAINT: Entity fields added after the initial schema MUST have default values to maintain backward compatibility with existing rows.
-- `[Path: app/src/main/java/cc/niaoer/nocall/data/prefs/SettingsRepository.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/data/prefs/SettingsRepository.kt]`
   - STATUS: DataStore Preferences wrapper. Exposes `notificationEnabled: Flow<Boolean>` (default true) and `setNotificationEnabled()`.
   - CONSTRAINT: DO NOT add new DataStore keys without default values. All preferences MUST use `Flow<T>` for reads.
-- `[Path: app/src/main/java/cc/niaoer/nocall/service/BlockingCallScreeningService.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/service/BlockingCallScreeningService.kt]`
   - STATUS: Call screening entry point (API 24+). `onScreenCall()` executes on binder thread: whitelist check (DB + contacts with 500ms timeout) → rule matching → call blocking/rejection via `CallResponse.Builder()`. Logs all calls to `CallLog` table.
   - CONSTRAINT: `runBlocking` is used here because `CallScreeningService` requires a synchronous response before the system rings the call. The work inside the coroutine is bounded by the contacts lookup timeout. DO NOT add unbounded blocking operations inside this coroutine.
-- `[Path: app/src/main/java/cc/niaoer/nocall/service/NotificationHelper.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/service/NotificationHelper.kt]`
   - STATUS: Singleton object. Creates notification channel "call_blocking" (API 26+), shows blocked-call notification with phone number and rule description. Respects `POST_NOTIFICATIONS` permission on API 33+.
-- `[Path: app/src/main/java/cc/niaoer/nocall/ui/theme/.*]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/ui/theme/.*]`
   - STATUS: Design token layer. `Color.kt` (Purple/Pink palette constants), `Theme.kt` (dynamic/static theme switching), `Type.kt` (Typography), `Shape.kt` (rounded corners).
   - CONSTRAINT: `[Dynamic_Color]` gate in `Theme.kt` (`Build.VERSION.SDK_INT >= Build.VERSION_CODES.S`) MUST be preserved. ALL new color tokens MUST be defined in `Color.kt`, NOT inline in components. When removing a feature, you MUST grep `Color.kt` for tokens it introduced and delete any that are now unreferenced.
-- `[Path: app/src/main/java/cc/niaoer/nocall/ui/navigation/NavRoutes.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/ui/navigation/NavRoutes.kt]`
   - STATUS: Route constants. HOME, RULES, RULE_ADD, RULE_EDIT ("rules/{ruleId}"), RULE_TEST, HISTORY, SETTINGS, WHITELIST. Helper `ruleEdit(id)` constructs parameterized route.
-- `[Path: app/src/main/java/cc/niaoer/nocall/ui/(home|rules|history|whitelist|settings|test)/.*ViewModel\.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/ui/(home|rules|history|whitelist|settings|test)/.*ViewModel\.kt]`
   - STATUS: Screen state holders. All extend `AndroidViewModel(context)` to access `AppContainer`. Expose state as `StateFlow<UiState>`, receive events via function calls.
-  - MANDATORY: Expose state EXCLUSIVELY as `StateFlow<UiState>`. Use `viewModelScope.launch` for async operations. Access DAOs via `(application as NoCallApplication).appContainer`.
+  - MANDATORY: Expose state EXCLUSIVELY as `StateFlow<UiState>`. Use `viewModelScope.launch` for async operations. Access DAOs via `(application as LowCallApplication).appContainer`.
   - BANNED: `runBlocking` in ViewModels. Direct `GlobalScope` usage.
-- `[Path: app/src/main/java/cc/niaoer/nocall/ui/(home|rules|history|whitelist|settings|test)/.*Screen\.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/ui/(home|rules|history|whitelist|settings|test)/.*Screen\.kt]`
   - STATUS: Stateless Compose UI. Receive data via params, emit events via lambdas. Top-level screen composables may call composable ViewModel accessors (no direct `viewModel()` injection in child components).
   - BANNED: Hardcoded raw colors (`Color(0xFF...)`), hardcoded user-visible strings, `collectAsState()` (use `collectAsStateWithLifecycle()`).
   - MANDATORY: `modifier: Modifier` MUST be the LAST optional parameter defaulting to `Modifier`. ALL colors MUST resolve via `MaterialTheme.colorScheme`. ALL strings MUST resolve via `stringResource()`.
-- `[Path: app/src/main/java/cc/niaoer/nocall/ui/settings/RuleImport.kt]`
+- `[Path: app/src/main/java/cc/niaoer/lowcall/ui/settings/RuleImport.kt]`
   - STATUS: Import validation logic. `filterValidRules(rules)` accepts JSON arrays of rule objects, rejects blank/invalid patterns, returns `ImportFilterResult`.
   - CONSTRAINT: Validation logic changes MUST be mirrored in `RuleImportTest.kt`.
 

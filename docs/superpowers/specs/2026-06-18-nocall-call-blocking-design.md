@@ -1,4 +1,4 @@
-# NoCall — Call Blocking App Design
+# LowCall — Call Blocking App Design
 
 <!-- Last updated: 2026-06-18 -->
 
@@ -21,7 +21,7 @@ Personal-use Android call blocking app using `CallScreeningService` (API 24+). U
 
 ```
 ┌───────────────────────────────────────────────────────────┐
-│                    NoCallApplication                      │
+│                    LowCallApplication                      │
 │  ┌─────────────────────────────────────────────────────┐ │
 │  │                   AppContainer                      │ │
 │  │  AppDatabase (Room)                                 │ │
@@ -42,10 +42,10 @@ Personal-use Android call blocking app using `CallScreeningService` (API 24+). U
 
 ### Dependency Flow (no DI framework)
 
-- `NoCallApplication` creates `AppContainer` on `onCreate()`, holds it as a property.
+- `LowCallApplication` creates `AppContainer` on `onCreate()`, holds it as a property.
 - `AppContainer` initializes `AppDatabase`, exposes DAOs and `RuleMatcher`.
 - ViewModels use `ViewModelProvider.Factory` that takes the `AppContainer` from Application.
-- `BlockingCallScreeningService` accesses `(application as NoCallApplication).appContainer`.
+- `BlockingCallScreeningService` accesses `(application as LowCallApplication).appContainer`.
 
 ### Gradle Dependencies to Add
 
@@ -127,7 +127,7 @@ class RuleMatcher {
 class BlockingCallScreeningService : CallScreeningService() {
     override fun onScreenCall(details: Call.Details) {
         val phoneNumber = details.handle?.schemeSpecificPart ?: return
-        val container = (application as NoCallApplication).appContainer
+        val container = (application as LowCallApplication).appContainer
         val rules = runBlocking { container.blockRuleDao.getEnabled() }
         val matched = container.ruleMatcher.match(phoneNumber, rules)
 
@@ -258,9 +258,9 @@ Notification content:
 ## File Structure
 
 ```
-app/src/main/java/cc/niaoer/nocall/
+app/src/main/java/cc/niaoer/lowcall/
   MainActivity.kt                    — NavHost, permission request, first-launch guide
-  NoCallApplication.kt               — Application subclass, AppContainer holder
+  LowCallApplication.kt               — Application subclass, AppContainer holder
   AppContainer.kt                    — Manual DI container
   data/
     db/
@@ -313,7 +313,7 @@ app/src/main/java/cc/niaoer/nocall/
 2. Create data model classes (BlockRule, CallLog, enums)
 3. Create Room database, DAOs, type converters
 4. Create RuleMatcher + unit tests
-5. Create AppContainer, NoCallApplication
+5. Create AppContainer, LowCallApplication
 6. Create BlockingCallScreeningService + NotificationHelper
 7. Update AndroidManifest.xml with permissions + service
 8. Create navigation routes

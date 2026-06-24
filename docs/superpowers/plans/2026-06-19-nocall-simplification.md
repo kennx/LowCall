@@ -1,4 +1,4 @@
-# NoCall Simplification Implementation Plan
+# LowCall Simplification Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -14,31 +14,31 @@
 
 | File | Responsibility After Change |
 |---|---|
-| `app/src/main/java/cc/niaoer/nocall/data/db/BlockRuleDao.kt` | Keep only used queries (`getAll`, `getEnabledList`, `getById`, `insert`, `update`, `delete`, `insertAll`). |
-| `app/src/main/java/cc/niaoer/nocall/data/db/WhitelistDao.kt` | Keep only used queries (`getAll`, `exists`, `insert`, `deleteById`). |
-| `app/src/main/java/cc/niaoer/nocall/data/RuleMatcher.kt` | Top-level `match(phoneNumber, rules)` + helpers; simplified `wildcardToRegex`. |
-| `app/src/main/java/cc/niaoer/nocall/data/ContactLookup.kt` | Top-level `isInContacts(context, phoneNumber)`. |
-| `app/src/main/java/cc/niaoer/nocall/AppContainer.kt` | Remove `ruleMatcher` and `contactLookup` properties. |
-| `app/src/main/java/cc/niaoer/nocall/service/BlockingCallScreeningService.kt` | Import and call top-level `match` and `isInContacts`. |
-| `app/src/main/java/cc/niaoer/nocall/ui/test/RuleTestViewModel.kt` | Import and call top-level `match`. |
-| `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditDecision.kt` | **Delete**. |
-| `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditViewModel.kt` | Inline save/suggestion/validation logic; `patternError` becomes `Boolean`. |
-| `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditScreen.kt` | Read `state.patternError` as `Boolean`. |
-| `app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsViewModel.kt` | Replace Gson with `org.json.JSONArray/JSONObject`; remove `ExportRule` usage; delete `_isExporting`. |
-| `app/src/main/java/cc/niaoer/nocall/ui/settings/RuleImport.kt` | Operate on `BlockRule` directly; return `List<BlockRule>` in `accepted`. |
+| `app/src/main/java/cc/niaoer/lowcall/data/db/BlockRuleDao.kt` | Keep only used queries (`getAll`, `getEnabledList`, `getById`, `insert`, `update`, `delete`, `insertAll`). |
+| `app/src/main/java/cc/niaoer/lowcall/data/db/WhitelistDao.kt` | Keep only used queries (`getAll`, `exists`, `insert`, `deleteById`). |
+| `app/src/main/java/cc/niaoer/lowcall/data/RuleMatcher.kt` | Top-level `match(phoneNumber, rules)` + helpers; simplified `wildcardToRegex`. |
+| `app/src/main/java/cc/niaoer/lowcall/data/ContactLookup.kt` | Top-level `isInContacts(context, phoneNumber)`. |
+| `app/src/main/java/cc/niaoer/lowcall/AppContainer.kt` | Remove `ruleMatcher` and `contactLookup` properties. |
+| `app/src/main/java/cc/niaoer/lowcall/service/BlockingCallScreeningService.kt` | Import and call top-level `match` and `isInContacts`. |
+| `app/src/main/java/cc/niaoer/lowcall/ui/test/RuleTestViewModel.kt` | Import and call top-level `match`. |
+| `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditDecision.kt` | **Delete**. |
+| `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditViewModel.kt` | Inline save/suggestion/validation logic; `patternError` becomes `Boolean`. |
+| `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditScreen.kt` | Read `state.patternError` as `Boolean`. |
+| `app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsViewModel.kt` | Replace Gson with `org.json.JSONArray/JSONObject`; remove `ExportRule` usage; delete `_isExporting`. |
+| `app/src/main/java/cc/niaoer/lowcall/ui/settings/RuleImport.kt` | Operate on `BlockRule` directly; return `List<BlockRule>` in `accepted`. |
 | `gradle/libs.versions.toml` | Remove `gson`, `lifecycleRuntimeKtx` versions and libraries. |
 | `app/build.gradle.kts` | Remove `implementation(libs.gson)` and `implementation(libs.androidx.lifecycle.runtime.ktx)`. |
-| `app/src/test/java/cc/niaoer/nocall/data/RuleMatcherTest.kt` | Update to call top-level `match` and `wildcardToRegex`. |
-| `app/src/test/java/cc/niaoer/nocall/ui/rules/RuleEditDecisionTest.kt` | **Delete** (logic is private to ViewModel). |
-| `app/src/test/java/cc/niaoer/nocall/ui/settings/RuleImportTest.kt` | Use `BlockRule`/`RuleType` instead of `ExportRule`. |
+| `app/src/test/java/cc/niaoer/lowcall/data/RuleMatcherTest.kt` | Update to call top-level `match` and `wildcardToRegex`. |
+| `app/src/test/java/cc/niaoer/lowcall/ui/rules/RuleEditDecisionTest.kt` | **Delete** (logic is private to ViewModel). |
+| `app/src/test/java/cc/niaoer/lowcall/ui/settings/RuleImportTest.kt` | Use `BlockRule`/`RuleType` instead of `ExportRule`. |
 
 ---
 
 ## Task 1: Prune Unused DAO Methods
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/db/BlockRuleDao.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/db/WhitelistDao.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/db/BlockRuleDao.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/db/WhitelistDao.kt`
 
 Unused methods (verified by grep):
 - `BlockRuleDao.getEnabled()` — no callers.
@@ -53,7 +53,7 @@ Unused methods (verified by grep):
 Remove lines 17-21 (`getEnabled`), 35-36 (`deleteById`), and 41-42 (`searchRules`). The remaining file:
 
 ```kotlin
-package cc.niaoer.nocall.data.db
+package cc.niaoer.lowcall.data.db
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -61,7 +61,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import cc.niaoer.nocall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.BlockRule
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -94,13 +94,13 @@ interface BlockRuleDao {
 Remove lines 24-25 (`searchEntries`). The remaining file:
 
 ```kotlin
-package cc.niaoer.nocall.data.db
+package cc.niaoer.lowcall.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import cc.niaoer.nocall.data.model.WhitelistEntry
+import cc.niaoer.lowcall.data.model.WhitelistEntry
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -131,7 +131,7 @@ Expected: PASS.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/db/BlockRuleDao.kt app/src/main/java/cc/niaoer/nocall/data/db/WhitelistDao.kt
+git add app/src/main/java/cc/niaoer/lowcall/data/db/BlockRuleDao.kt app/src/main/java/cc/niaoer/lowcall/data/db/WhitelistDao.kt
 git commit -m "refactor: remove unused DAO methods"
 ```
 
@@ -140,7 +140,7 @@ git commit -m "refactor: remove unused DAO methods"
 ## Task 2: Remove Dead StateFlow from SettingsViewModel
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsViewModel.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsViewModel.kt`
 
 - [ ] **Step 1: Delete `_isExporting` and `isExporting`**
 
@@ -165,7 +165,7 @@ Expected: PASS.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsViewModel.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsViewModel.kt
 git commit -m "refactor: remove unread exporting state flow"
 ```
 
@@ -174,9 +174,9 @@ git commit -m "refactor: remove unread exporting state flow"
 ## Task 3: Replace Gson with org.json and Collapse ExportRule
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/settings/RuleImport.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsViewModel.kt`
-- Modify: `app/src/test/java/cc/niaoer/nocall/ui/settings/RuleImportTest.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/settings/RuleImport.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsViewModel.kt`
+- Modify: `app/src/test/java/cc/niaoer/lowcall/ui/settings/RuleImportTest.kt`
 - Delete: (none yet; `ExportRule` class will be removed from SettingsViewModel)
 
 ### 3.1 Update `RuleImport.kt`
@@ -186,11 +186,11 @@ git commit -m "refactor: remove unread exporting state flow"
 - [ ] **Step 1: Rewrite `RuleImport.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.settings
+package cc.niaoer.lowcall.ui.settings
 
-import cc.niaoer.nocall.data.isValidRegex
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.data.isValidRegex
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 
 data class ImportFilterResult(
     val accepted: List<BlockRule>,
@@ -201,7 +201,7 @@ data class ImportFilterResult(
  * Filters exported rules before persistence so invalid REGEX and blank patterns
  * cannot re-enter the database through the import path.
  *
- * Wildcard and Exact patterns are not regex-compiled by [cc.niaoer.nocall.data.match],
+ * Wildcard and Exact patterns are not regex-compiled by [cc.niaoer.lowcall.data.match],
  * so they are accepted without a regex compile check; only REGEX is validated.
  * Patterns are trimmed to avoid trailing-whitespace silent-match failures.
  */
@@ -231,8 +231,8 @@ fun filterValidRules(rules: List<BlockRule>): ImportFilterResult {
 Replace:
 
 ```kotlin
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 ```
@@ -241,8 +241,8 @@ with:
 
 ```kotlin
 import android.util.Log
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 import org.json.JSONArray
 import org.json.JSONObject
 ```
@@ -332,10 +332,10 @@ fun importRules(uri: Uri) {
 - [ ] **Step 5: Rewrite `RuleImportTest.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.settings
+package cc.niaoer.lowcall.ui.settings
 
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -434,7 +434,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/settings/RuleImport.kt app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsViewModel.kt app/src/test/java/cc/niaoer/nocall/ui/settings/RuleImportTest.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/settings/RuleImport.kt app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsViewModel.kt app/src/test/java/cc/niaoer/lowcall/ui/settings/RuleImportTest.kt
 git commit -m "refactor: replace Gson with org.json and collapse ExportRule"
 ```
 
@@ -443,10 +443,10 @@ git commit -m "refactor: replace Gson with org.json and collapse ExportRule"
 ## Task 4: Inline RuleEditDecision Logic into RuleEditViewModel
 
 **Files:**
-- Delete: `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditDecision.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditViewModel.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditScreen.kt`
-- Delete: `app/src/test/java/cc/niaoer/nocall/ui/rules/RuleEditDecisionTest.kt`
+- Delete: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditDecision.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditViewModel.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditScreen.kt`
+- Delete: `app/src/test/java/cc/niaoer/lowcall/ui/rules/RuleEditDecisionTest.kt`
 
 ### 4.1 Update `RuleEditUiState` and `RuleEditViewModel`
 
@@ -455,16 +455,16 @@ git commit -m "refactor: replace Gson with org.json and collapse ExportRule"
 New content for `RuleEditViewModel.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.ui.rules
+package cc.niaoer.lowcall.ui.rules
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.isValidRegex
-import cc.niaoer.nocall.data.looksLikeRegex
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.isValidRegex
+import cc.niaoer.lowcall.data.looksLikeRegex
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -483,7 +483,7 @@ data class RuleEditUiState(
 )
 
 class RuleEditViewModel(application: Application) : AndroidViewModel(application) {
-    private val blockRuleDao = (application as NoCallApplication).appContainer.blockRuleDao
+    private val blockRuleDao = (application as LowCallApplication).appContainer.blockRuleDao
 
     private val _uiState = MutableStateFlow(RuleEditUiState())
     val uiState: StateFlow<RuleEditUiState> = _uiState.asStateFlow()
@@ -636,8 +636,8 @@ supportingText = if (state.patternError) {
 - [ ] **Step 3: Delete `RuleEditDecision.kt` and `RuleEditDecisionTest.kt`**
 
 ```bash
-rm app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditDecision.kt
-rm app/src/test/java/cc/niaoer/nocall/ui/rules/RuleEditDecisionTest.kt
+rm app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditDecision.kt
+rm app/src/test/java/cc/niaoer/lowcall/ui/rules/RuleEditDecisionTest.kt
 ```
 
 - [ ] **Step 4: Build and run unit tests**
@@ -661,22 +661,22 @@ git commit -m "refactor: inline RuleEditDecision into RuleEditViewModel"
 ## Task 5: Convert RuleMatcher Class to Top-Level Function
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/RuleMatcher.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/AppContainer.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/service/BlockingCallScreeningService.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/test/RuleTestViewModel.kt`
-- Modify: `app/src/test/java/cc/niaoer/nocall/data/RuleMatcherTest.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/RuleMatcher.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/AppContainer.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/service/BlockingCallScreeningService.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/test/RuleTestViewModel.kt`
+- Modify: `app/src/test/java/cc/niaoer/lowcall/data/RuleMatcherTest.kt`
 
 ### 5.1 Rewrite `RuleMatcher.kt`
 
 - [ ] **Step 1: Replace class with top-level functions**
 
 ```kotlin
-package cc.niaoer.nocall.data
+package cc.niaoer.lowcall.data
 
 import android.util.Log
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 
 fun looksLikeRegex(pattern: String): Boolean {
     return pattern.startsWith("^") ||
@@ -727,14 +727,14 @@ private fun wildcardToRegex(pattern: String): Regex {
 Delete the `RuleMatcher` import and the `val ruleMatcher` property. The file becomes:
 
 ```kotlin
-package cc.niaoer.nocall
+package cc.niaoer.lowcall
 
 import android.content.Context
-import cc.niaoer.nocall.data.db.AppDatabase
-import cc.niaoer.nocall.data.db.BlockRuleDao
-import cc.niaoer.nocall.data.db.CallLogDao
-import cc.niaoer.nocall.data.db.WhitelistDao
-import cc.niaoer.nocall.data.prefs.SettingsRepository
+import cc.niaoer.lowcall.data.db.AppDatabase
+import cc.niaoer.lowcall.data.db.BlockRuleDao
+import cc.niaoer.lowcall.data.db.CallLogDao
+import cc.niaoer.lowcall.data.db.WhitelistDao
+import cc.niaoer.lowcall.data.prefs.SettingsRepository
 
 class AppContainer(context: Context) {
     val database: AppDatabase = AppDatabase.create(context)
@@ -750,7 +750,7 @@ class AppContainer(context: Context) {
 Add import:
 
 ```kotlin
-import cc.niaoer.nocall.data.match
+import cc.niaoer.lowcall.data.match
 ```
 
 Change:
@@ -770,7 +770,7 @@ val matched = match(phoneNumber, enabledRules)
 Add import:
 
 ```kotlin
-import cc.niaoer.nocall.data.match
+import cc.niaoer.lowcall.data.match
 ```
 
 Change:
@@ -830,16 +830,16 @@ git commit -m "refactor: convert RuleMatcher to top-level function"
 ## Task 6: Convert ContactLookup Class to Top-Level Function
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/ContactLookup.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/AppContainer.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/service/BlockingCallScreeningService.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/ContactLookup.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/AppContainer.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/service/BlockingCallScreeningService.kt`
 
 ### 6.1 Rewrite `ContactLookup.kt`
 
 - [ ] **Step 1: Replace class with top-level function**
 
 ```kotlin
-package cc.niaoer.nocall.data
+package cc.niaoer.lowcall.data
 
 import android.content.Context
 import android.provider.ContactsContract
@@ -875,7 +875,7 @@ Already done in Task 5; verify `AppContainer.kt` no longer references `ContactLo
 Add import:
 
 ```kotlin
-import cc.niaoer.nocall.data.isInContacts
+import cc.niaoer.lowcall.data.isInContacts
 ```
 
 Change:
@@ -987,8 +987,8 @@ git diff --stat
 ```
 
 Confirm expected deletions:
-- `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditDecision.kt`
-- `app/src/test/java/cc/niaoer/nocall/ui/rules/RuleEditDecisionTest.kt`
+- `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditDecision.kt`
+- `app/src/test/java/cc/niaoer/lowcall/ui/rules/RuleEditDecisionTest.kt`
 
 - [ ] **Step 4: Final sanity commit (if any uncommitted changes remain)**
 

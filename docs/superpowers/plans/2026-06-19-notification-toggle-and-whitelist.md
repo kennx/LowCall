@@ -17,15 +17,15 @@
 ### Task 1: Phone normalizer (pure, TDD)
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/data/PhoneNormalizer.kt`
-- Create: `app/src/test/java/cc/niaoer/nocall/data/PhoneNormalizerTest.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/PhoneNormalizer.kt`
+- Create: `app/src/test/java/cc/niaoer/lowcall/data/PhoneNormalizerTest.kt`
 
 - [ ] **Step 1: Write the failing test**
 
-Create `app/src/test/java/cc/niaoer/nocall/data/PhoneNormalizerTest.kt`:
+Create `app/src/test/java/cc/niaoer/lowcall/data/PhoneNormalizerTest.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.data
+package cc.niaoer.lowcall.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -55,28 +55,28 @@ class PhoneNormalizerTest {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:testDebugUnitTest --tests 'cc.niaoer.nocall.data.PhoneNormalizerTest'`
+Run: `JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:testDebugUnitTest --tests 'cc.niaoer.lowcall.data.PhoneNormalizerTest'`
 Expected: FAIL — `Unresolved reference: normalizePhone`.
 
 - [ ] **Step 3: Write minimal implementation**
 
-Create `app/src/main/java/cc/niaoer/nocall/data/PhoneNormalizer.kt`:
+Create `app/src/main/java/cc/niaoer/lowcall/data/PhoneNormalizer.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.data
+package cc.niaoer.lowcall.data
 
 fun normalizePhone(raw: String): String = raw.filter { it.isDigit() }
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:testDebugUnitTest --tests 'cc.niaoer.nocall.data.PhoneNormalizerTest'`
+Run: `JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:testDebugUnitTest --tests 'cc.niaoer.lowcall.data.PhoneNormalizerTest'`
 Expected: PASS, 4 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/PhoneNormalizer.kt app/src/test/java/cc/niaoer/nocall/data/PhoneNormalizerTest.kt
+git add app/src/main/java/cc/niaoer/lowcall/data/PhoneNormalizer.kt app/src/test/java/cc/niaoer/lowcall/data/PhoneNormalizerTest.kt
 git commit -m "feat: add pure normalizePhone helper"
 ```
 
@@ -127,14 +127,14 @@ git commit -m "chore: add datastore-preferences 1.1.7"
 ### Task 3: SettingsRepository (DataStore, no local unit test — Android runtime)
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/data/prefs/SettingsRepository.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/prefs/SettingsRepository.kt`
 
 - [ ] **Step 1: Implement the repository**
 
-Create `app/src/main/java/cc/niaoer/nocall/data/prefs/SettingsRepository.kt`:
+Create `app/src/main/java/cc/niaoer/lowcall/data/prefs/SettingsRepository.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.data.prefs
+package cc.niaoer.lowcall.data.prefs
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -144,16 +144,16 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-private val Context.nocallDataStore by preferencesDataStore("nocall_settings")
+private val Context.lowcallDataStore by preferencesDataStore("lowcall_settings")
 
 class SettingsRepository(private val context: Context) {
     private val notificationEnabledKey = booleanPreferencesKey("notification_enabled")
 
-    val notificationEnabled: Flow<Boolean> = context.nocallDataStore.data
+    val notificationEnabled: Flow<Boolean> = context.lowcallDataStore.data
         .map { prefs -> prefs[notificationEnabledKey] ?: true }
 
     suspend fun setNotificationEnabled(enabled: Boolean) {
-        context.nocallDataStore.edit { it[notificationEnabledKey] = enabled }
+        context.lowcallDataStore.edit { it[notificationEnabledKey] = enabled }
     }
 }
 ```
@@ -168,7 +168,7 @@ Expected: BUILD SUCCESSFUL. Remove the unused `preferencesOf` import if the comp
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/prefs/SettingsRepository.kt
+git add app/src/main/java/cc/niaoer/lowcall/data/prefs/SettingsRepository.kt
 git commit -m "feat: add SettingsRepository for notification toggle"
 ```
 
@@ -177,16 +177,16 @@ git commit -m "feat: add SettingsRepository for notification toggle"
 ### Task 4: WhitelistEntry entity + DAO + DB migration
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/data/model/WhitelistEntry.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/data/db/WhitelistDao.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/db/AppDatabase.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/model/WhitelistEntry.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/db/WhitelistDao.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/db/AppDatabase.kt`
 
 - [ ] **Step 1: Create the entity**
 
-Create `app/src/main/java/cc/niaoer/nocall/data/model/WhitelistEntry.kt`:
+Create `app/src/main/java/cc/niaoer/lowcall/data/model/WhitelistEntry.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.data.model
+package cc.niaoer.lowcall.data.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -208,16 +208,16 @@ data class WhitelistEntry(
 
 - [ ] **Step 2: Create the DAO**
 
-Create `app/src/main/java/cc/niaoer/nocall/data/db/WhitelistDao.kt`:
+Create `app/src/main/java/cc/niaoer/lowcall/data/db/WhitelistDao.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.data.db
+package cc.niaoer.lowcall.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import cc.niaoer.nocall.data.model.WhitelistEntry
+import cc.niaoer.lowcall.data.model.WhitelistEntry
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -238,10 +238,10 @@ interface WhitelistDao {
 
 - [ ] **Step 3: Bump DB to v2 with migration**
 
-Replace `app/src/main/java/cc/niaoer/nocall/data/db/AppDatabase.kt` with:
+Replace `app/src/main/java/cc/niaoer/lowcall/data/db/AppDatabase.kt` with:
 
 ```kotlin
-package cc.niaoer.nocall.data.db
+package cc.niaoer.lowcall.data.db
 
 import android.content.Context
 import androidx.room.Database
@@ -250,9 +250,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.CallLog
-import cc.niaoer.nocall.data.model.WhitelistEntry
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.CallLog
+import cc.niaoer.lowcall.data.model.WhitelistEntry
 
 @Database(
     entities = [BlockRule::class, CallLog::class, WhitelistEntry::class],
@@ -290,7 +290,7 @@ abstract class AppDatabase : RoomDatabase() {
             return Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
-                "nocall.db"
+                "lowcall.db"
             )
                 .addMigrations(MIGRATION_1_2)
                 .fallbackToDestructiveMigration()
@@ -308,9 +308,9 @@ Expected: BUILD SUCCESSFUL (KSP generates `WhitelistDao_Impl`). If it fails on t
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/model/WhitelistEntry.kt \
-        app/src/main/java/cc/niaoer/nocall/data/db/WhitelistDao.kt \
-        app/src/main/java/cc/niaoer/nocall/data/db/AppDatabase.kt
+git add app/src/main/java/cc/niaoer/lowcall/data/model/WhitelistEntry.kt \
+        app/src/main/java/cc/niaoer/lowcall/data/db/WhitelistDao.kt \
+        app/src/main/java/cc/niaoer/lowcall/data/db/AppDatabase.kt
 git commit -m "feat: add whitelist entity, DAO, and DB v1->v2 migration"
 ```
 
@@ -319,15 +319,15 @@ git commit -m "feat: add whitelist entity, DAO, and DB v1->v2 migration"
 ### Task 5: ContactLookup
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/data/ContactLookup.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/ContactLookup.kt`
 - Modify: `app/src/main/AndroidManifest.xml`
 
 - [ ] **Step 1: Implement the lookup**
 
-Create `app/src/main/java/cc/niaoer/nocall/data/ContactLookup.kt`:
+Create `app/src/main/java/cc/niaoer/lowcall/data/ContactLookup.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.data
+package cc.niaoer.lowcall.data
 
 import android.content.Context
 import android.provider.ContactsContract
@@ -373,7 +373,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/ContactLookup.kt app/src/main/AndroidManifest.xml
+git add app/src/main/java/cc/niaoer/lowcall/data/ContactLookup.kt app/src/main/AndroidManifest.xml
 git commit -m "feat: add ContactLookup with READ_CONTACTS permission"
 ```
 
@@ -382,23 +382,23 @@ git commit -m "feat: add ContactLookup with READ_CONTACTS permission"
 ### Task 6: Wire AppContainer
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/AppContainer.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/AppContainer.kt`
 
 - [ ] **Step 1: Add the three dependencies**
 
-Replace `app/src/main/java/cc/niaoer/nocall/AppContainer.kt` with:
+Replace `app/src/main/java/cc/niaoer/lowcall/AppContainer.kt` with:
 
 ```kotlin
-package cc.niaoer.nocall
+package cc.niaoer.lowcall
 
 import android.content.Context
-import cc.niaoer.nocall.data.ContactLookup
-import cc.niaoer.nocall.data.RuleMatcher
-import cc.niaoer.nocall.data.db.AppDatabase
-import cc.niaoer.nocall.data.db.BlockRuleDao
-import cc.niaoer.nocall.data.db.CallLogDao
-import cc.niaoer.nocall.data.db.WhitelistDao
-import cc.niaoer.nocall.data.prefs.SettingsRepository
+import cc.niaoer.lowcall.data.ContactLookup
+import cc.niaoer.lowcall.data.RuleMatcher
+import cc.niaoer.lowcall.data.db.AppDatabase
+import cc.niaoer.lowcall.data.db.BlockRuleDao
+import cc.niaoer.lowcall.data.db.CallLogDao
+import cc.niaoer.lowcall.data.db.WhitelistDao
+import cc.niaoer.lowcall.data.prefs.SettingsRepository
 
 class AppContainer(context: Context) {
     val database: AppDatabase = AppDatabase.create(context)
@@ -419,7 +419,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/AppContainer.kt
+git add app/src/main/java/cc/niaoer/lowcall/AppContainer.kt
 git commit -m "feat: wire whitelist, settings, contactLookup into AppContainer"
 ```
 
@@ -428,22 +428,22 @@ git commit -m "feat: wire whitelist, settings, contactLookup into AppContainer"
 ### Task 7: BlockingCallScreeningService rewrite
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/service/BlockingCallScreeningService.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/service/BlockingCallScreeningService.kt`
 
 - [ ] **Step 1: Rewrite onScreenCall with whitelist-first + notification gate**
 
-Replace the body of `app/src/main/java/cc/niaoer/nocall/service/BlockingCallScreeningService.kt` with:
+Replace the body of `app/src/main/java/cc/niaoer/lowcall/service/BlockingCallScreeningService.kt` with:
 
 ```kotlin
-package cc.niaoer.nocall.service
+package cc.niaoer.lowcall.service
 
 import android.os.Build
 import android.telecom.Call
 import android.telecom.CallScreeningService
 import androidx.annotation.RequiresApi
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.model.CallAction
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.model.CallAction
+import cc.niaoer.lowcall.data.model.CallLog
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -456,11 +456,11 @@ class BlockingCallScreeningService : CallScreeningService() {
             return
         }
 
-        val container = (application as NoCallApplication).appContainer
+        val container = (application as LowCallApplication).appContainer
 
         runBlocking {
             // Whitelist has absolute priority: table entry or live contact match.
-            val normalized = cc.niaoer.nocall.data.normalizePhone(phoneNumber)
+            val normalized = cc.niaoer.lowcall.data.normalizePhone(phoneNumber)
             val inWhitelist = container.whitelistDao.exists(normalized) ||
                 container.contactLookup.isInContacts(phoneNumber)
 
@@ -534,7 +534,7 @@ Expected: BUILD SUCCESSFUL, all prior tests pass.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/service/BlockingCallScreeningService.kt
+git add app/src/main/java/cc/niaoer/lowcall/service/BlockingCallScreeningService.kt
 git commit -m "feat: check whitelist before rules and gate notification on preference"
 ```
 
@@ -582,11 +582,11 @@ git commit -m "feat: add notification and whitelist strings"
 ### Task 9: SettingsViewModel notification toggle
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsViewModel.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsViewModel.kt`
 
 - [ ] **Step 1: Expose notificationEnabled StateFlow + setter**
 
-Edit `app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsViewModel.kt`. Add imports:
+Edit `app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsViewModel.kt`. Add imports:
 
 ```kotlin
 import kotlinx.coroutines.flow.SharingStarted
@@ -609,7 +609,7 @@ Inside the class, after the `gson` val, add:
     }
 ```
 
-`container` is already declared at the top of the class (`private val container = (application as NoCallApplication).appContainer`). `viewModelScope` and `launch` are already imported.
+`container` is already declared at the top of the class (`private val container = (application as LowCallApplication).appContainer`). `viewModelScope` and `launch` are already imported.
 
 - [ ] **Step 2: Verify compile**
 
@@ -619,7 +619,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsViewModel.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsViewModel.kt
 git commit -m "feat: expose notification toggle on SettingsViewModel"
 ```
 
@@ -628,11 +628,11 @@ git commit -m "feat: expose notification toggle on SettingsViewModel"
 ### Task 10: SettingsScreen notification Switch UI
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsScreen.kt`
 
 - [ ] **Step 1: Add the Switch row above the existing buttons**
 
-Edit `app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsScreen.kt`. Add imports:
+Edit `app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsScreen.kt`. Add imports:
 
 ```kotlin
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -685,7 +685,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsScreen.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsScreen.kt
 git commit -m "feat: add notification toggle Switch in Settings"
 ```
 
@@ -694,21 +694,21 @@ git commit -m "feat: add notification toggle Switch in Settings"
 ### Task 11: CallHistoryViewModel add-to-whitelist
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryViewModel.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryViewModel.kt`
 
 - [ ] **Step 1: Expose whitelisted set + addToWhitelist**
 
-Replace `app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryViewModel.kt` with:
+Replace `app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryViewModel.kt` with:
 
 ```kotlin
-package cc.niaoer.nocall.ui.history
+package cc.niaoer.lowcall.ui.history
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.normalizePhone
-import cc.niaoer.nocall.data.model.WhitelistEntry
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.normalizePhone
+import cc.niaoer.lowcall.data.model.WhitelistEntry
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -716,11 +716,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class CallHistoryViewModel(application: Application) : AndroidViewModel(application) {
-    private val container = (application as NoCallApplication).appContainer
+    private val container = (application as LowCallApplication).appContainer
     private val callLogDao = container.callLogDao
     private val whitelistDao = container.whitelistDao
 
-    val logs: StateFlow<List<cc.niaoer.nocall.data.model.CallLog>> = callLogDao.getAllOrdered()
+    val logs: StateFlow<List<cc.niaoer.lowcall.data.model.CallLog>> = callLogDao.getAllOrdered()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val whitelistedNumbers: StateFlow<Set<String>> = whitelistDao.getAll()
@@ -760,7 +760,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryViewModel.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryViewModel.kt
 git commit -m "feat: expose whitelisted set and addToWhitelist on history VM"
 ```
 
@@ -769,15 +769,15 @@ git commit -m "feat: expose whitelisted set and addToWhitelist on history VM"
 ### Task 12: CallHistoryScreen add-to-whitelist button on blocked cards
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryScreen.kt`
 
 - [ ] **Step 1: Pass whitelist state into the card and render the button**
 
-Edit `app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryScreen.kt`. Add imports:
+Edit `app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryScreen.kt`. Add imports:
 
 ```kotlin
 import androidx.compose.material3.TextButton
-import cc.niaoer.nocall.data.normalizePhone
+import cc.niaoer.lowcall.data.normalizePhone
 ```
 
 In `CallHistoryScreen`, after `val logs by viewModel.logs.collectAsStateWithLifecycle()` add:
@@ -847,7 +847,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryScreen.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryScreen.kt
 git commit -m "feat: add-to-whitelist button on blocked history cards"
 ```
 
@@ -856,28 +856,28 @@ git commit -m "feat: add-to-whitelist button on blocked history cards"
 ### Task 13: WhitelistViewModel
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/whitelist/WhitelistViewModel.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/whitelist/WhitelistViewModel.kt`
 
 - [ ] **Step 1: Implement the ViewModel**
 
-Create `app/src/main/java/cc/niaoer/nocall/ui/whitelist/WhitelistViewModel.kt`:
+Create `app/src/main/java/cc/niaoer/lowcall/ui/whitelist/WhitelistViewModel.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.ui.whitelist
+package cc.niaoer.lowcall.ui.whitelist
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.normalizePhone
-import cc.niaoer.nocall.data.model.WhitelistEntry
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.normalizePhone
+import cc.niaoer.lowcall.data.model.WhitelistEntry
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class WhitelistViewModel(application: Application) : AndroidViewModel(application) {
-    private val whitelistDao = (application as NoCallApplication).appContainer.whitelistDao
+    private val whitelistDao = (application as LowCallApplication).appContainer.whitelistDao
 
     val entries: StateFlow<List<WhitelistEntry>> = whitelistDao.getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -912,7 +912,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/whitelist/WhitelistViewModel.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/whitelist/WhitelistViewModel.kt
 git commit -m "feat: add WhitelistViewModel"
 ```
 
@@ -921,14 +921,14 @@ git commit -m "feat: add WhitelistViewModel"
 ### Task 14: WhitelistScreen with READ_CONTACTS request
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/whitelist/WhitelistScreen.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/whitelist/WhitelistScreen.kt`
 
 - [ ] **Step 1: Implement the screen**
 
-Create `app/src/main/java/cc/niaoer/nocall/ui/whitelist/WhitelistScreen.kt`:
+Create `app/src/main/java/cc/niaoer/lowcall/ui/whitelist/WhitelistScreen.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.ui.whitelist
+package cc.niaoer.lowcall.ui.whitelist
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -979,8 +979,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
-import cc.niaoer.nocall.data.model.WhitelistEntry
+import cc.niaoer.lowcall.R
+import cc.niaoer.lowcall.data.model.WhitelistEntry
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -1200,7 +1200,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/whitelist/WhitelistScreen.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/whitelist/WhitelistScreen.kt
 git commit -m "feat: add WhitelistScreen with READ_CONTACTS request"
 ```
 
@@ -1209,13 +1209,13 @@ git commit -m "feat: add WhitelistScreen with READ_CONTACTS request"
 ### Task 15: Navigation route + RulesScreen entry + NavHost wiring
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/navigation/NavRoutes.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/rules/RulesScreen.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/MainActivity.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/navigation/NavRoutes.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RulesScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/MainActivity.kt`
 
 - [ ] **Step 1: Add the route**
 
-Edit `app/src/main/java/cc/niaoer/nocall/ui/navigation/NavRoutes.kt`. Add after `const val SETTINGS = "settings"`:
+Edit `app/src/main/java/cc/niaoer/lowcall/ui/navigation/NavRoutes.kt`. Add after `const val SETTINGS = "settings"`:
 
 ```kotlin
     const val WHITELIST = "whitelist"
@@ -1223,7 +1223,7 @@ Edit `app/src/main/java/cc/niaoer/nocall/ui/navigation/NavRoutes.kt`. Add after 
 
 - [ ] **Step 2: Add the top-bar entry in RulesScreen**
 
-Edit `app/src/main/java/cc/niaoer/nocall/ui/rules/RulesScreen.kt`. Add imports:
+Edit `app/src/main/java/cc/niaoer/lowcall/ui/rules/RulesScreen.kt`. Add imports:
 
 ```kotlin
 import androidx.compose.material.icons.filled.List
@@ -1248,13 +1248,13 @@ In the `actions` block of the `TopAppBar`, after the Test `IconButton` and befor
 
 - [ ] **Step 3: Wire the NavHost and pass the callback**
 
-Edit `app/src/main/java/cc/niaoer/nocall/MainActivity.kt`. Add import:
+Edit `app/src/main/java/cc/niaoer/lowcall/MainActivity.kt`. Add import:
 
 ```kotlin
-import cc.niaoer.nocall.ui.whitelist.WhitelistScreen
+import cc.niaoer.lowcall.ui.whitelist.WhitelistScreen
 ```
 
-In `NoCallNavHost`, in the `composable(NavRoutes.RULES) { RulesScreen(...) }` call, add `onWhitelist = { navController.navigate(NavRoutes.WHITELIST) }` to the `RulesScreen(...)` arguments.
+In `LowCallNavHost`, in the `composable(NavRoutes.RULES) { RulesScreen(...) }` call, add `onWhitelist = { navController.navigate(NavRoutes.WHITELIST) }` to the `RulesScreen(...)` arguments.
 
 After the `composable(NavRoutes.RULE_TEST) { ... }` block, add:
 
@@ -1274,9 +1274,9 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/navigation/NavRoutes.kt \
-        app/src/main/java/cc/niaoer/nocall/ui/rules/RulesScreen.kt \
-        app/src/main/java/cc/niaoer/nocall/MainActivity.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/navigation/NavRoutes.kt \
+        app/src/main/java/cc/niaoer/lowcall/ui/rules/RulesScreen.kt \
+        app/src/main/java/cc/niaoer/lowcall/MainActivity.kt
 git commit -m "feat: add whitelist route and RulesScreen top-bar entry"
 ```
 
@@ -1314,13 +1314,13 @@ git commit -m "chore: address lint findings from new screens"
 
 ### Task 17: Physical-device verification
 
-**Target device:** `00285361G001888` (A069, Android 16/API 36), already holding `android.app.role.CALL_SCREENING` for `cc.niaoer.nocall`. Verify with `adb -s 00285361G001888 shell dumpsys role | grep -A2 CALL_SCREENING` before starting.
+**Target device:** `00285361G001888` (A069, Android 16/API 36), already holding `android.app.role.CALL_SCREENING` for `cc.niaoer.lowcall`. Verify with `adb -s 00285361G001888 shell dumpsys role | grep -A2 CALL_SCREENING` before starting.
 
 **Files:** No production changes.
 
 - [ ] **Step 1: Confirm device online and role held**
 
-Run: `adb devices -l` (expect `00285361G001888 device`) and `adb -s 00285361G001888 shell dumpsys role | grep -A3 CALL_SCREENING` (expect `holders=cc.niaoer.nocall`).
+Run: `adb devices -l` (expect `00285361G001888 device`) and `adb -s 00285361G001888 shell dumpsys role | grep -A3 CALL_SCREENING` (expect `holders=cc.niaoer.lowcall`).
 
 - [ ] **Step 2: Install debug APK preserving data**
 
@@ -1331,11 +1331,11 @@ Expected: `Installed on 1 device.` This MUST preserve the existing v1 DB so the 
 
 Run:
 ```
-adb -s 00285361G001888 shell run-as cc.niaoer.nocall ls databases/
-adb -s 00285361G001888 shell run-as cc.niaoer.nocall cat databases/nocall.db > /tmp/nocall_db2.db
-sqlite3 /tmp/nocall_db2.db ".tables"
-sqlite3 /tmp/nocall_db2.db "SELECT id, pattern, rule_type FROM block_rules ORDER BY id;"
-sqlite3 /tmp/nocall_db2.db "SELECT COUNT(*) FROM call_logs;"
+adb -s 00285361G001888 shell run-as cc.niaoer.lowcall ls databases/
+adb -s 00285361G001888 shell run-as cc.niaoer.lowcall cat databases/lowcall.db > /tmp/lowcall_db2.db
+sqlite3 /tmp/lowcall_db2.db ".tables"
+sqlite3 /tmp/lowcall_db2.db "SELECT id, pattern, rule_type FROM block_rules ORDER BY id;"
+sqlite3 /tmp/lowcall_db2.db "SELECT COUNT(*) FROM call_logs;"
 ```
 Expected: `whitelist` table present; pre-existing `block_rules` and `call_logs` rows survive (no data loss). If the device has no `sqlite3` binary, pull the db file and inspect with host `sqlite3` as shown.
 
@@ -1344,7 +1344,7 @@ Expected: `whitelist` table present; pre-existing `block_rules` and `call_logs` 
 In the app, open Settings and turn the "拦截通知" switch OFF. Trigger a blocked call (use a number that matches an existing enabled rule; on the emulator use `gsm call`, or on the device use a number known to match). Observe:
 - The call is rejected (not connected).
 - No system notification appears.
-- `sqlite3 /tmp/nocall_db2.db "SELECT phone_number, action, datetime(timestamp/1000,'unixepoch','localtime') FROM call_logs ORDER BY timestamp DESC LIMIT 3;"` shows a new BLOCKED row.
+- `sqlite3 /tmp/lowcall_db2.db "SELECT phone_number, action, datetime(timestamp/1000,'unixepoch','localtime') FROM call_logs ORDER BY timestamp DESC LIMIT 3;"` shows a new BLOCKED row.
 
 - [ ] **Step 5: Notification toggle on → notification appears**
 
@@ -1354,8 +1354,8 @@ Turn the switch ON. Trigger another blocked call. Observe: a system notification
 
 Open History. On a BLOCKED card tap "加入白名单". Expected: the button text flips to "已加白名单" and is disabled. Verify the DB:
 ```
-adb -s 00285361G001888 shell run-as cc.niaoer.nocall cat databases/nocall.db > /tmp/nocall_db2.db
-sqlite3 /tmp/nocall_db2.db "SELECT id, phone_number, normalized_number, note FROM whitelist;"
+adb -s 00285361G001888 shell run-as cc.niaoer.lowcall cat databases/lowcall.db > /tmp/lowcall_db2.db
+sqlite3 /tmp/lowcall_db2.db "SELECT id, phone_number, normalized_number, note FROM whitelist;"
 ```
 Expected: one row with the added number and its normalized form.
 
@@ -1363,7 +1363,7 @@ Expected: one row with the added number and its normalized form.
 
 Trigger a call from the same number again. Expected: the call is allowed (rings/connects, not rejected), no notification, and a new ALLOWED row is logged:
 ```
-sqlite3 /tmp/nocall_db2.db "SELECT phone_number, action, datetime(timestamp/1000,'unixepoch','localtime') FROM call_logs ORDER BY timestamp DESC LIMIT 3;"
+sqlite3 /tmp/lowcall_db2.db "SELECT phone_number, action, datetime(timestamp/1000,'unixepoch','localtime') FROM call_logs ORDER BY timestamp DESC LIMIT 3;"
 ```
 Expected: top row is ALLOWED for that number, even though a rule in `block_rules` still matches it.
 
@@ -1371,7 +1371,7 @@ Expected: top row is ALLOWED for that number, even though a rule in `block_rules
 
 Open the Whitelist screen (Rules top-bar list icon). If READ_CONTACTS is not granted, tap "启用通讯录白名单" and grant. Save a test contact in the device contacts app with a number that matches an existing rule. Trigger a call from that number. Expected: allowed (not blocked), ALLOWED log row, no notification — without any `whitelist` table entry for it:
 ```
-sqlite3 /tmp/nocall_db2.db "SELECT phone_number FROM whitelist WHERE normalized_number LIKE '%<digits>';"
+sqlite3 /tmp/lowcall_db2.db "SELECT phone_number FROM whitelist WHERE normalized_number LIKE '%<digits>';"
 ```
 Expected: no row (contacts are live, not imported).
 
@@ -1381,7 +1381,7 @@ In the Whitelist screen, tap the FAB, enter a number + note, save. Expected: new
 
 - [ ] **Step 10: Logcat health check**
 
-Run: `adb -s 00285361G001888 logcat -d -t 500 | grep -iE 'nocall|CallScreening|FATAL|AndroidRuntime|SQLiteException|Migration'`
+Run: `adb -s 00285361G001888 logcat -d -t 500 | grep -iE .lowcall|CallScreening|FATAL|AndroidRuntime|SQLiteException|Migration'`
 Expected: no FATAL/AndroidRuntime crashes, no SQLiteException, no migration errors. Bound CallScreeningService messages present on blocked/allowed calls.
 
 - [ ] **Step 11: Record evidence**

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NoCall</string>
+    <string name="app_name">LowCall</string>
     <string name="rules_title">拦截规则</string>
     <string name="no_rules">暂无拦截规则\n点击右下角添加</string>
     <string name="add_rule">添加规则</string>
@@ -34,7 +34,7 @@
     <string name="import_error">导入失败，请检查文件格式</string>
     <string name="history_deleted">记录已清空</string>
     <string name="setup_title">设置来电筛选</string>
-    <string name="setup_message">请将 NoCall 设为来电筛选应用以启用拦截功能</string>
+    <string name="setup_message">请将 LowCall 设为来电筛选应用以启用拦截功能</string>
     <string name="open_settings">打开设置</string>
     <string name="regex_suggestion_title">可能需要正则类型</string>
     <string name="regex_suggestion_message">当前模式包含正则元字符，按「通配」类型可能无法正确匹配。是否切换为「正则」类型？</string>

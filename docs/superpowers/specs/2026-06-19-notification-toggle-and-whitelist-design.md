@@ -4,7 +4,7 @@
 
 ## Goal
 
-Add two capabilities to NoCall and verify them on a connected physical device:
+Add two capabilities to LowCall and verify them on a connected physical device:
 
 1. A Settings toggle that controls whether the system notification is shown when a call is blocked. Blocking itself (reject + log) continues regardless of the toggle.
 2. A whitelist that always allows a call through, evaluated before block rules. The whitelist is a dedicated Room table of manually added numbers, layered with a live contacts lookup: any number present in the device contacts is also treated as whitelisted. The blocked-call history exposes a one-tap "add to whitelist" action per blocked entry.
@@ -71,7 +71,7 @@ interface WhitelistDao {
 New `data/prefs/SettingsRepository.kt` wrapping a `DataStore<Preferences>`. The `preferencesDataStore` delegate must be declared at file top level (Kotlin delegate syntax requires top-level `Context` extension), not inside the class:
 
 ```kotlin
-private val Context.dataStore by preferencesDataStore("nocall_settings")
+private val Context.dataStore by preferencesDataStore("lowcall_settings")
 
 class SettingsRepository(private val context: Context) {
     private val NOTIFICATION_ENABLED = booleanPreferencesKey("notification_enabled")
@@ -148,7 +148,7 @@ New `WhitelistScreen` + `WhitelistViewModel`:
 - `WhitelistScreen`: `TopAppBar` "白名单" + back; empty state "无白名单号码"; `LazyColumn` rows showing number + note + time with a delete `IconButton`; a `FloatingActionButton` opens an `AlertDialog` with two `OutlinedTextField`s (number, note) and a save `TextButton`.
 - On first entry, if `READ_CONTACTS` is not granted, show a card "启用通讯录白名单" with a button that launches `ActivityResultContracts.RequestPermission()`. Once granted, the list shows. The permission is requested here only, not at app launch, to avoid stacking permission prompts.
 
-Navigation: `NavRoutes.WHITELIST = "whitelist"` and `fun whitelist() = "whitelist"`. Entry point is a new `IconButton` in `RulesScreen` top bar (icons for History, Test, Whitelist, Settings). `MainActivity.NoCallNavHost` adds `composable(NavRoutes.WHITELIST) { WhitelistScreen(onNavigateBack = ...) }`.
+Navigation: `NavRoutes.WHITELIST = "whitelist"` and `fun whitelist() = "whitelist"`. Entry point is a new `IconButton` in `RulesScreen` top bar (icons for History, Test, Whitelist, Settings). `MainActivity.LowCallNavHost` adds `composable(NavRoutes.WHITELIST) { WhitelistScreen(onNavigateBack = ...) }`.
 
 `AndroidManifest.xml` adds `<uses-permission android:name="android.permission.READ_CONTACTS" />`.
 
@@ -166,13 +166,13 @@ New `res/values/strings.xml` entries: `notification_setting`, `notification_sett
 
 ### Physical device
 
-Use connected device `00285361G001888` (A069, Android 16/API 36), which holds `android.app.role.CALL_SCREENING` for `cc.niaoer.nocall`.
+Use connected device `00285361G001888` (A069, Android 16/API 36), which holds `android.app.role.CALL_SCREENING` for `cc.niaoer.lowcall`.
 
 - Install the debug APK without clearing app data (preserve existing rules and the v1 DB; the v1→v2 migration must run cleanly).
 - Notification toggle: turn off in Settings, trigger a blocked call (or simulate), confirm no system notification appears but the call is still rejected and logged BLOCKED. Turn on, confirm the notification returns.
 - Whitelist: from a blocked history card, tap "加入白名单"; confirm the button flips to "已加白名单" and a `whitelist` row exists in the DB. Trigger the same number again; confirm it is logged ALLOWED and not blocked, even though a rule still matches it.
 - Contacts: grant READ_CONTACTS from the Whitelist screen, confirm a number saved as a contact is allowed even without a whitelist-table entry.
-- Confirm NoCall remains the call-screening role holder; inspect logcat for crashes, migration errors, or ContactLookup failures.
+- Confirm LowCall remains the call-screening role holder; inspect logcat for crashes, migration errors, or ContactLookup failures.
 
 A real carrier call is outside scope; deterministic numbers can be exercised via the emulator Telecom flow if needed, but the physical device is the primary verification target per the user's request.
 

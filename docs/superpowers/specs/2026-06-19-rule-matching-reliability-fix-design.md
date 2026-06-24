@@ -51,7 +51,7 @@ Move decision logic needed by the ViewModel into small pure functions/data resul
 
 ### Physical device
 
-Use connected device `00285361G001888` (A069, Android 16/API 36), which currently holds the `android.app.role.CALL_SCREENING` role for `cc.niaoer.nocall`.
+Use connected device `00285361G001888` (A069, Android 16/API 36), which currently holds the `android.app.role.CALL_SCREENING` role for `cc.niaoer.lowcall`.
 
 - Install the debug APK without clearing app data.
 - Verify exact, wildcard, valid regex, invalid regex, suggestion cancel, and explicit keep/switch flows.

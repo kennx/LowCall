@@ -1,4 +1,4 @@
-# NoCall Call Blocking — Implementation Plan
+# LowCall Call Blocking — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -83,7 +83,7 @@ implementation(libs.gson)
 - [ ] **Step 4: Sync and verify build**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:dependencies --configuration debugCompileClasspath 2>&1 | head -5
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:dependencies --configuration debugCompileClasspath 2>&1 | head -5
 ```
 
 Expected: BUILD SUCCESSFUL (no dependency resolution errors).
@@ -100,13 +100,13 @@ git commit -m "chore: add Room, Navigation, Lifecycle, Gson dependencies"
 ### Task 2: Create Data Model Classes
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/data/model/BlockRule.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/data/model/CallLog.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/model/BlockRule.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/model/CallLog.kt`
 
 - [ ] **Step 1: Create `BlockRule.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.data.model
+package cc.niaoer.lowcall.data.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -128,7 +128,7 @@ data class BlockRule(
 - [ ] **Step 2: Create `CallLog.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.data.model
+package cc.niaoer.lowcall.data.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -154,7 +154,7 @@ data class CallLog(
 - [ ] **Step 3: Build to verify compilation**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -5
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -5
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -162,7 +162,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/model/
+git add app/src/main/java/cc/niaoer/lowcall/data/model/
 git commit -m "feat: add BlockRule and CallLog entity models"
 ```
 
@@ -171,19 +171,19 @@ git commit -m "feat: add BlockRule and CallLog entity models"
 ### Task 3: Create Room Database, DAOs, and Type Converters
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/data/db/Converters.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/data/db/BlockRuleDao.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/data/db/CallLogDao.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/data/db/AppDatabase.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/db/Converters.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/db/BlockRuleDao.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/db/CallLogDao.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/db/AppDatabase.kt`
 
 - [ ] **Step 1: Create type converters**
 
 ```kotlin
-package cc.niaoer.nocall.data.db
+package cc.niaoer.lowcall.data.db
 
 import androidx.room.TypeConverter
-import cc.niaoer.nocall.data.model.CallAction
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.data.model.CallAction
+import cc.niaoer.lowcall.data.model.RuleType
 
 class Converters {
     @TypeConverter
@@ -203,7 +203,7 @@ class Converters {
 - [ ] **Step 2: Create `BlockRuleDao.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.data.db
+package cc.niaoer.lowcall.data.db
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -211,7 +211,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import cc.niaoer.nocall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.BlockRule
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -245,13 +245,13 @@ interface BlockRuleDao {
 - [ ] **Step 3: Create `CallLogDao.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.data.db
+package cc.niaoer.lowcall.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.data.model.CallLog
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -270,15 +270,15 @@ interface CallLogDao {
 - [ ] **Step 4: Create `AppDatabase.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.data.db
+package cc.niaoer.lowcall.data.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.CallLog
 
 @Database(
     entities = [BlockRule::class, CallLog::class],
@@ -295,7 +295,7 @@ abstract class AppDatabase : RoomDatabase() {
             return Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
-                "nocall.db"
+                "lowcall.db"
             ).build()
         }
     }
@@ -305,7 +305,7 @@ abstract class AppDatabase : RoomDatabase() {
 - [ ] **Step 5: Build to verify Room compilation**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -313,7 +313,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/db/
+git add app/src/main/java/cc/niaoer/lowcall/data/db/
 git commit -m "feat: add Room database, DAOs, and type converters"
 ```
 
@@ -322,18 +322,18 @@ git commit -m "feat: add Room database, DAOs, and type converters"
 ### Task 4: Create RuleMatcher with Unit Tests
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/data/RuleMatcher.kt`
-- Create: `app/src/test/java/cc/niaoer/nocall/data/RuleMatcherTest.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/data/RuleMatcher.kt`
+- Create: `app/src/test/java/cc/niaoer/lowcall/data/RuleMatcherTest.kt`
 
 - [ ] **Step 1: Write the failing test**
 
-Create `app/src/test/java/cc/niaoer/nocall/data/RuleMatcherTest.kt`:
+Create `app/src/test/java/cc/niaoer/lowcall/data/RuleMatcherTest.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.data
+package cc.niaoer.lowcall.data
 
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -424,20 +424,20 @@ class RuleMatcherTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:testDebugUnitTest --tests "cc.niaoer.nocall.data.RuleMatcherTest" 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:testDebugUnitTest --tests "cc.niaoer.lowcall.data.RuleMatcherTest" 2>&1 | tail -10
 ```
 
 Expected: FAIL — RuleMatcher class not found.
 
 - [ ] **Step 3: Write minimal implementation**
 
-Create `app/src/main/java/cc/niaoer/nocall/data/RuleMatcher.kt`:
+Create `app/src/main/java/cc/niaoer/lowcall/data/RuleMatcher.kt`:
 
 ```kotlin
-package cc.niaoer.nocall.data
+package cc.niaoer.lowcall.data
 
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 
 class RuleMatcher {
 
@@ -465,7 +465,7 @@ class RuleMatcher {
 - [ ] **Step 4: Run test to verify it passes**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:testDebugUnitTest --tests "cc.niaoer.nocall.data.RuleMatcherTest" 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:testDebugUnitTest --tests "cc.niaoer.lowcall.data.RuleMatcherTest" 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL, all 11 tests pass.
@@ -473,7 +473,7 @@ Expected: BUILD SUCCESSFUL, all 11 tests pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/RuleMatcher.kt app/src/test/java/cc/niaoer/nocall/data/RuleMatcherTest.kt
+git add app/src/main/java/cc/niaoer/lowcall/data/RuleMatcher.kt app/src/test/java/cc/niaoer/lowcall/data/RuleMatcherTest.kt
 git commit -m "feat: add RuleMatcher with exact/wildcard/regex matching"
 ```
 
@@ -482,20 +482,20 @@ git commit -m "feat: add RuleMatcher with exact/wildcard/regex matching"
 ### Task 5: Create AppContainer and Application Class
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/AppContainer.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/NoCallApplication.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/AppContainer.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/LowCallApplication.kt`
 - Modify: `app/src/main/AndroidManifest.xml`
 
 - [ ] **Step 1: Create `AppContainer.kt`**
 
 ```kotlin
-package cc.niaoer.nocall
+package cc.niaoer.lowcall
 
 import android.content.Context
-import cc.niaoer.nocall.data.RuleMatcher
-import cc.niaoer.nocall.data.db.AppDatabase
-import cc.niaoer.nocall.data.db.BlockRuleDao
-import cc.niaoer.nocall.data.db.CallLogDao
+import cc.niaoer.lowcall.data.RuleMatcher
+import cc.niaoer.lowcall.data.db.AppDatabase
+import cc.niaoer.lowcall.data.db.BlockRuleDao
+import cc.niaoer.lowcall.data.db.CallLogDao
 
 class AppContainer(context: Context) {
     val database: AppDatabase = AppDatabase.create(context)
@@ -505,14 +505,14 @@ class AppContainer(context: Context) {
 }
 ```
 
-- [ ] **Step 2: Create `NoCallApplication.kt`**
+- [ ] **Step 2: Create `LowCallApplication.kt`**
 
 ```kotlin
-package cc.niaoer.nocall
+package cc.niaoer.lowcall
 
 import android.app.Application
 
-class NoCallApplication : Application() {
+class LowCallApplication : Application() {
     lateinit var appContainer: AppContainer
         private set
 
@@ -525,11 +525,11 @@ class NoCallApplication : Application() {
 
 - [ ] **Step 3: Register Application in `AndroidManifest.xml`**
 
-In `app/src/main/AndroidManifest.xml`, add `android:name=".NoCallApplication"` to the `<application>` tag:
+In `app/src/main/AndroidManifest.xml`, add `android:name=".LowCallApplication"` to the `<application>` tag:
 
 ```xml
 <application
-    android:name=".NoCallApplication"
+    android:name=".LowCallApplication"
     android:allowBackup="true"
     ...
 ```
@@ -537,7 +537,7 @@ In `app/src/main/AndroidManifest.xml`, add `android:name=".NoCallApplication"` t
 - [ ] **Step 4: Build to verify**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -5
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -5
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -545,8 +545,8 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/AppContainer.kt app/src/main/java/cc/niaoer/nocall/NoCallApplication.kt app/src/main/AndroidManifest.xml
-git commit -m "feat: add AppContainer and NoCallApplication"
+git add app/src/main/java/cc/niaoer/lowcall/AppContainer.kt app/src/main/java/cc/niaoer/lowcall/LowCallApplication.kt app/src/main/AndroidManifest.xml
+git commit -m "feat: add AppContainer and LowCallApplication"
 ```
 
 ---
@@ -554,14 +554,14 @@ git commit -m "feat: add AppContainer and NoCallApplication"
 ### Task 6: Create CallScreeningService and NotificationHelper
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/service/NotificationHelper.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/service/BlockingCallScreeningService.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/service/NotificationHelper.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/service/BlockingCallScreeningService.kt`
 - Modify: `app/src/main/AndroidManifest.xml`
 
 - [ ] **Step 1: Create `NotificationHelper.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.service
+package cc.niaoer.lowcall.service
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -574,8 +574,8 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import cc.niaoer.nocall.MainActivity
-import cc.niaoer.nocall.R
+import cc.niaoer.lowcall.MainActivity
+import cc.niaoer.lowcall.R
 
 object NotificationHelper {
     const val CHANNEL_ID = "call_blocking"
@@ -636,15 +636,15 @@ object NotificationHelper {
 - [ ] **Step 2: Create `BlockingCallScreeningService.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.service
+package cc.niaoer.lowcall.service
 
 import android.os.Build
 import android.telecom.Call
 import android.telecom.CallScreeningService
 import androidx.annotation.RequiresApi
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.model.CallAction
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.model.CallAction
+import cc.niaoer.lowcall.data.model.CallLog
 import kotlinx.coroutines.runBlocking
 
 @RequiresApi(Build.VERSION_CODES.N)
@@ -656,7 +656,7 @@ class BlockingCallScreeningService : CallScreeningService() {
             return
         }
 
-        val container = (application as NoCallApplication).appContainer
+        val container = (application as LowCallApplication).appContainer
         val rules = runBlocking { container.blockRuleDao.getEnabled() }
         val enabledRules = runBlocking {
             // getEnabled() returns Flow, we need a list from the current snapshot
@@ -713,7 +713,7 @@ Actually, let me revise: the service needs a synchronous list of enabled rules. 
 
 - [ ] **Step 2a: Add `getEnabledList()` to `BlockRuleDao.kt`**
 
-Edit `app/src/main/java/cc/niaoer/nocall/data/db/BlockRuleDao.kt`, add this query:
+Edit `app/src/main/java/cc/niaoer/lowcall/data/db/BlockRuleDao.kt`, add this query:
 
 ```kotlin
 @Query("SELECT * FROM block_rules WHERE enabled = 1 ORDER BY created_at DESC")
@@ -723,15 +723,15 @@ suspend fun getEnabledList(): List<BlockRule>
 - [ ] **Step 2b: Simplify `BlockingCallScreeningService.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.service
+package cc.niaoer.lowcall.service
 
 import android.os.Build
 import android.telecom.Call
 import android.telecom.CallScreeningService
 import androidx.annotation.RequiresApi
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.model.CallAction
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.model.CallAction
+import cc.niaoer.lowcall.data.model.CallLog
 import kotlinx.coroutines.runBlocking
 
 @RequiresApi(Build.VERSION_CODES.N)
@@ -743,7 +743,7 @@ class BlockingCallScreeningService : CallScreeningService() {
             return
         }
 
-        val container = (application as NoCallApplication).appContainer
+        val container = (application as LowCallApplication).appContainer
 
         runBlocking {
             val enabledRules = container.blockRuleDao.getEnabledList()
@@ -803,7 +803,7 @@ Inside `<application>`, after `</activity>`, add:
 - [ ] **Step 4: Build to verify**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -811,7 +811,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/service/ app/src/main/java/cc/niaoer/nocall/data/db/BlockRuleDao.kt app/src/main/AndroidManifest.xml
+git add app/src/main/java/cc/niaoer/lowcall/service/ app/src/main/java/cc/niaoer/lowcall/data/db/BlockRuleDao.kt app/src/main/AndroidManifest.xml
 git commit -m "feat: add CallScreeningService and notification helper"
 ```
 
@@ -820,12 +820,12 @@ git commit -m "feat: add CallScreeningService and notification helper"
 ### Task 7: Create Navigation Routes
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/navigation/NavRoutes.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/navigation/NavRoutes.kt`
 
 - [ ] **Step 1: Create `NavRoutes.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.navigation
+package cc.niaoer.lowcall.ui.navigation
 
 object NavRoutes {
     const val RULES = "rules"
@@ -842,7 +842,7 @@ object NavRoutes {
 - [ ] **Step 2: Build to verify**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -5
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -5
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -850,7 +850,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/navigation/
+git add app/src/main/java/cc/niaoer/lowcall/ui/navigation/
 git commit -m "feat: add navigation route constants"
 ```
 
@@ -859,26 +859,26 @@ git commit -m "feat: add navigation route constants"
 ### Task 8: Create RulesViewModel and RulesScreen
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/rules/RulesViewModel.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/rules/RulesScreen.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RulesViewModel.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RulesScreen.kt`
 
 - [ ] **Step 1: Create `RulesViewModel.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.rules
+package cc.niaoer.lowcall.ui.rules
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.model.BlockRule
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.model.BlockRule
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class RulesViewModel(application: Application) : AndroidViewModel(application) {
-    private val blockRuleDao = (application as NoCallApplication).appContainer.blockRuleDao
+    private val blockRuleDao = (application as LowCallApplication).appContainer.blockRuleDao
 
     val rules: StateFlow<List<BlockRule>> = blockRuleDao.getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -900,7 +900,7 @@ class RulesViewModel(application: Application) : AndroidViewModel(application) {
 - [ ] **Step 2: Create `RulesScreen.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.rules
+package cc.niaoer.lowcall.ui.rules
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -940,9 +940,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.R
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1082,7 +1082,7 @@ Replace the current strings.xml content:
 
 ```xml
 <resources>
-    <string name="app_name">NoCall</string>
+    <string name="app_name">LowCall</string>
     <string name="rules_title">拦截规则</string>
     <string name="no_rules">暂无拦截规则\n点击右下角添加</string>
     <string name="add_rule">添加规则</string>
@@ -1115,7 +1115,7 @@ Replace the current strings.xml content:
     <string name="import_success">已导入 %1$d 条规则</string>
     <string name="import_error">导入失败，请检查文件格式</string>
     <string name="setup_title">设置来电筛选</string>
-    <string name="setup_message">请将 NoCall 设为来电筛选应用以启用拦截功能</string>
+    <string name="setup_message">请将 LowCall 设为来电筛选应用以启用拦截功能</string>
     <string name="open_settings">打开设置</string>
     <string name="notification_permission">需要通知权限以显示拦截提醒</string>
     <string name="grant_permission">授予权限</string>
@@ -1126,7 +1126,7 @@ Replace the current strings.xml content:
 - [ ] **Step 4: Build to verify**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -1134,7 +1134,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/rules/ app/src/main/res/values/strings.xml
+git add app/src/main/java/cc/niaoer/lowcall/ui/rules/ app/src/main/res/values/strings.xml
 git commit -m "feat: add RulesScreen with rule list and toggle"
 ```
 
@@ -1143,20 +1143,20 @@ git commit -m "feat: add RulesScreen with rule list and toggle"
 ### Task 9: Create RuleEditViewModel and RuleEditScreen
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditViewModel.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/rules/RuleEditScreen.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditViewModel.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RuleEditScreen.kt`
 
 - [ ] **Step 1: Create `RuleEditViewModel.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.rules
+package cc.niaoer.lowcall.ui.rules
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -1172,7 +1172,7 @@ data class RuleEditUiState(
 )
 
 class RuleEditViewModel(application: Application) : AndroidViewModel(application) {
-    private val blockRuleDao = (application as NoCallApplication).appContainer.blockRuleDao
+    private val blockRuleDao = (application as LowCallApplication).appContainer.blockRuleDao
 
     private val _uiState = MutableStateFlow(RuleEditUiState())
     val uiState: StateFlow<RuleEditUiState> = _uiState.asStateFlow()
@@ -1244,7 +1244,7 @@ class RuleEditViewModel(application: Application) : AndroidViewModel(application
 - [ ] **Step 2: Create `RuleEditScreen.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.rules
+package cc.niaoer.lowcall.ui.rules
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -1280,8 +1280,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.R
+import cc.niaoer.lowcall.data.model.RuleType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1414,7 +1414,7 @@ fun RuleEditScreen(
 - [ ] **Step 3: Build to verify**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -1422,7 +1422,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/rules/
+git add app/src/main/java/cc/niaoer/lowcall/ui/rules/
 git commit -m "feat: add RuleEditScreen with add/edit/delete"
 ```
 
@@ -1431,19 +1431,19 @@ git commit -m "feat: add RuleEditScreen with add/edit/delete"
 ### Task 10: Create RuleTestViewModel and RuleTestScreen
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/test/RuleTestViewModel.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/test/RuleTestScreen.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/test/RuleTestViewModel.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/test/RuleTestScreen.kt`
 
 - [ ] **Step 1: Create `RuleTestViewModel.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.test
+package cc.niaoer.lowcall.ui.test
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.model.BlockRule
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.model.BlockRule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -1456,7 +1456,7 @@ data class RuleTestUiState(
 )
 
 class RuleTestViewModel(application: Application) : AndroidViewModel(application) {
-    private val container = (application as NoCallApplication).appContainer
+    private val container = (application as LowCallApplication).appContainer
 
     private val _uiState = MutableStateFlow(RuleTestUiState())
     val uiState: StateFlow<RuleTestUiState> = _uiState.asStateFlow()
@@ -1480,7 +1480,7 @@ class RuleTestViewModel(application: Application) : AndroidViewModel(application
 - [ ] **Step 2: Create `RuleTestScreen.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.test
+package cc.niaoer.lowcall.ui.test
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -1509,7 +1509,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
+import cc.niaoer.lowcall.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1602,7 +1602,7 @@ fun RuleTestScreen(
 - [ ] **Step 3: Build to verify**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -1610,7 +1610,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/test/
+git add app/src/main/java/cc/niaoer/lowcall/ui/test/
 git commit -m "feat: add RuleTestScreen for testing rule matching"
 ```
 
@@ -1619,26 +1619,26 @@ git commit -m "feat: add RuleTestScreen for testing rule matching"
 ### Task 11: Create CallHistoryViewModel and CallHistoryScreen
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryViewModel.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryScreen.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryViewModel.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryScreen.kt`
 
 - [ ] **Step 1: Create `CallHistoryViewModel.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.history
+package cc.niaoer.lowcall.ui.history
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.model.CallLog
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class CallHistoryViewModel(application: Application) : AndroidViewModel(application) {
-    private val callLogDao = (application as NoCallApplication).appContainer.callLogDao
+    private val callLogDao = (application as LowCallApplication).appContainer.callLogDao
 
     val logs: StateFlow<List<CallLog>> = callLogDao.getAllOrdered()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -1654,7 +1654,7 @@ class CallHistoryViewModel(application: Application) : AndroidViewModel(applicat
 - [ ] **Step 2: Create `CallHistoryScreen.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.history
+package cc.niaoer.lowcall.ui.history
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -1691,9 +1691,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
-import cc.niaoer.nocall.data.model.CallAction
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.R
+import cc.niaoer.lowcall.data.model.CallAction
+import cc.niaoer.lowcall.data.model.CallLog
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -1827,7 +1827,7 @@ private fun ActionChip(isBlocked: Boolean) {
 - [ ] **Step 3: Build to verify**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -1835,7 +1835,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/history/
+git add app/src/main/java/cc/niaoer/lowcall/ui/history/
 git commit -m "feat: add CallHistoryScreen with blocked/allowed log list"
 ```
 
@@ -1844,13 +1844,13 @@ git commit -m "feat: add CallHistoryScreen with blocked/allowed log list"
 ### Task 12: Create SettingsViewModel and SettingsScreen (Import/Export/Clear)
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsViewModel.kt`
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsScreen.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsViewModel.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsScreen.kt`
 
 - [ ] **Step 1: Create `SettingsViewModel.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.settings
+package cc.niaoer.lowcall.ui.settings
 
 import android.app.Application
 import android.content.Context
@@ -1858,9 +1858,9 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.NoCallApplication
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.LowCallApplication
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -1878,7 +1878,7 @@ data class ExportRule(
 )
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
-    private val container = (application as NoCallApplication).appContainer
+    private val container = (application as LowCallApplication).appContainer
     private val gson = Gson()
 
     private val _isExporting = MutableStateFlow(false)
@@ -1902,7 +1902,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                     outputStream.write(json.toByteArray())
                 }
                 _isExporting.value = false
-                Toast.makeText(context, context.getString(cc.niaoer.nocall.R.string.export_success), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(cc.niaoer.lowcall.R.string.export_success), Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 _isExporting.value = false
                 Toast.makeText(getApplication(), e.message ?: "导出失败", Toast.LENGTH_SHORT).show()
@@ -1932,13 +1932,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 container.blockRuleDao.insertAll(rules)
                 Toast.makeText(
                     context,
-                    context.getString(cc.niaoer.nocall.R.string.import_success, rules.size),
+                    context.getString(cc.niaoer.lowcall.R.string.import_success, rules.size),
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: Exception) {
                 Toast.makeText(
                     getApplication(),
-                    getApplication<Application>().getString(cc.niaoer.nocall.R.string.import_error),
+                    getApplication<Application>().getString(cc.niaoer.lowcall.R.string.import_error),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -1950,7 +1950,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             container.callLogDao.deleteAll()
             Toast.makeText(
                 context,
-                context.getString(cc.niaoer.nocall.R.string.history_deleted),
+                context.getString(cc.niaoer.lowcall.R.string.history_deleted),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -1961,7 +1961,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 - [ ] **Step 2: Create `SettingsScreen.kt`**
 
 ```kotlin
-package cc.niaoer.nocall.ui.settings
+package cc.niaoer.lowcall.ui.settings
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -1997,7 +1997,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
+import cc.niaoer.lowcall.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -2046,7 +2046,7 @@ fun SettingsScreen(
                 .padding(16.dp)
         ) {
             Button(
-                onClick = { exportLauncher.launch("nocall_rules.json") },
+                onClick = { exportLauncher.launch("lowcall_rules.json") },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(R.string.export_rules))
@@ -2101,7 +2101,7 @@ fun SettingsScreen(
 - [ ] **Step 3: Build to verify**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -2109,7 +2109,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/settings/
+git add app/src/main/java/cc/niaoer/lowcall/ui/settings/
 git commit -m "feat: add SettingsScreen with import/export/clear"
 ```
 
@@ -2118,12 +2118,12 @@ git commit -m "feat: add SettingsScreen with import/export/clear"
 ### Task 13: Update MainActivity with NavHost and Setup Guide
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/MainActivity.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/MainActivity.kt`
 
 - [ ] **Step 1: Rewrite `MainActivity.kt`**
 
 ```kotlin
-package cc.niaoer.nocall
+package cc.niaoer.lowcall
 
 import android.Manifest
 import android.content.Intent
@@ -2159,13 +2159,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import cc.niaoer.nocall.ui.history.CallHistoryScreen
-import cc.niaoer.nocall.ui.navigation.NavRoutes
-import cc.niaoer.nocall.ui.rules.RuleEditScreen
-import cc.niaoer.nocall.ui.rules.RulesScreen
-import cc.niaoer.nocall.ui.settings.SettingsScreen
-import cc.niaoer.nocall.ui.test.RuleTestScreen
-import cc.niaoer.nocall.ui.theme.NoCallTheme
+import cc.niaoer.lowcall.ui.history.CallHistoryScreen
+import cc.niaoer.lowcall.ui.navigation.NavRoutes
+import cc.niaoer.lowcall.ui.rules.RuleEditScreen
+import cc.niaoer.lowcall.ui.rules.RulesScreen
+import cc.niaoer.lowcall.ui.settings.SettingsScreen
+import cc.niaoer.lowcall.ui.test.RuleTestScreen
+import cc.niaoer.lowcall.ui.theme.LowCallTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -2183,7 +2183,7 @@ class MainActivity : ComponentActivity() {
         ensureScreeningServiceEnabled()
 
         setContent {
-            NoCallTheme {
+            LowCallTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -2267,7 +2267,7 @@ class MainActivity : ComponentActivity() {
 - [ ] **Step 2: Build to verify**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -2275,7 +2275,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/MainActivity.kt
+git add app/src/main/java/cc/niaoer/lowcall/MainActivity.kt
 git commit -m "feat: update MainActivity with NavHost and all screens"
 ```
 
@@ -2284,27 +2284,27 @@ git commit -m "feat: update MainActivity with NavHost and all screens"
 ### Task 14: Add Initial Rule (Dogfooding) and Polishing
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/NoCallApplication.kt` (add prepopulate)
+- Modify: `app/src/main/java/cc/niaoer/lowcall/LowCallApplication.kt` (add prepopulate)
 - Modify: `app/src/main/res/values/strings.xml` (add setup guide strings)
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/rules/RulesScreen.kt` (add history button)
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RulesScreen.kt` (add history button)
 
 No new files needed beyond the AppContainer update for prepopulating a demo rule.
 
 - [ ] **Step 1: Remove the old ExampleUnitTest and ExampleInstrumentedTest, replace with real tests**
 
 Delete:
-- `app/src/test/java/cc/niaoer/nocall/ExampleUnitTest.kt`
-- `app/src/androidTest/java/cc/niaoer/nocall/ExampleInstrumentedTest.kt`
+- `app/src/test/java/cc/niaoer/lowcall/ExampleUnitTest.kt`
+- `app/src/androidTest/java/cc/niaoer/lowcall/ExampleInstrumentedTest.kt`
 
 ```bash
-rm app/src/test/java/cc/niaoer/nocall/ExampleUnitTest.kt
-rm app/src/androidTest/java/cc/niaoer/nocall/ExampleInstrumentedTest.kt
+rm app/src/test/java/cc/niaoer/lowcall/ExampleUnitTest.kt
+rm app/src/androidTest/java/cc/niaoer/lowcall/ExampleInstrumentedTest.kt
 ```
 
 - [ ] **Step 2: Run all unit tests**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:testDebugUnitTest 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:testDebugUnitTest 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL, RuleMatcherTest passes.
@@ -2336,7 +2336,7 @@ onHistory = { navController.navigate(NavRoutes.HISTORY) },
 - [ ] **Step 5: Build and run full check**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin :app:testDebugUnitTest 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugKotlin :app:testDebugUnitTest 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -2344,7 +2344,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 6: Run lint check**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:lintDebug 2>&1 | tail -15
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:lintDebug 2>&1 | tail -15
 ```
 
 Expected: No errors (warnings ok).
@@ -2373,7 +2373,7 @@ Expected: List of connected devices with "device" status.
 - [ ] **Step 2: Build debug APK**
 
 ```bash
-cd /Users/kenn/PROJECTS/NoCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:assembleDebug 2>&1 | tail -10
+cd /Users/kenn/PROJECTS/LowCall && JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:assembleDebug 2>&1 | tail -10
 ```
 
 Expected: BUILD SUCCESSFUL.
@@ -2389,7 +2389,7 @@ Expected: "Success"
 - [ ] **Step 4: Launch the app**
 
 ```bash
-adb shell am start -n cc.niaoer.nocall/.MainActivity
+adb shell am start -n cc.niaoer.lowcall/.MainActivity
 ```
 
 Expected: App launches on device.
@@ -2397,15 +2397,15 @@ Expected: App launches on device.
 - [ ] **Step 5: Verify app is installed and running**
 
 ```bash
-adb shell pm list packages | grep nocall
+adb shell pm list packages | grep lowcall
 ```
 
-Expected: `package:cc.niaoer.nocall`
+Expected: `package:cc.niaoer.lowcall`
 
 - [ ] **Step 6: Enable the screening service**
 
 After app launches, the user must manually enable CallScreeningService:
-- Open Settings → Apps → Default apps → Caller ID & spam app → Select NoCall
+- Open Settings → Apps → Default apps → Caller ID & spam app → Select LowCall
 - Or run: `adb shell cmd telecom set-default-dialer` (not applicable for screening service)
 
 Note: The user will need to manually enable the screening service in system settings. We should display a guide on first launch.

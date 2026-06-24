@@ -1,8 +1,8 @@
-# NoCall UI Redesign Implementation Plan
+# LowCall UI Redesign Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Redesign NoCall app UI following OpenDesign spec: add bottom navigation, home screen, tab filtering, search, and redesigned cards while keeping all existing functionality.
+**Goal:** Redesign LowCall app UI following OpenDesign spec: add bottom navigation, home screen, tab filtering, search, and redesigned cards while keeping all existing functionality.
 
 **Architecture:** Material3 NavigationBar + NavHost with 5 top-level destinations. HomeScreen queries CallLogDao for stats. RulesScreen uses ScrollableTabRow with existing RuleType. WhitelistScreen adds search filtering existing entries and contacts. No database schema changes.
 
@@ -35,9 +35,9 @@
 ## Task 1: Data Layer — Add Count and Search Queries
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/db/CallLogDao.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/db/BlockRuleDao.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/data/db/WhitelistDao.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/db/CallLogDao.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/db/BlockRuleDao.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/data/db/WhitelistDao.kt`
 
 - [ ] **Step 1: Add count queries to CallLogDao**
 
@@ -80,7 +80,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/data/db/
+git add app/src/main/java/cc/niaoer/lowcall/data/db/
 git commit -m "feat: add count and search queries to DAOs"
 ```
 
@@ -89,14 +89,14 @@ git commit -m "feat: add count and search queries to DAOs"
 ## Task 2: NavRoutes — Add Home Route
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/navigation/NavRoutes.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/navigation/NavRoutes.kt`
 
 - [ ] **Step 1: Add HOME constant**
 
 Replace the file content with:
 
 ```kotlin
-package cc.niaoer.nocall.ui.navigation
+package cc.niaoer.lowcall.ui.navigation
 
 object NavRoutes {
     const val HOME = "home"
@@ -120,7 +120,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/navigation/NavRoutes.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/navigation/NavRoutes.kt
 git commit -m "feat: add HOME route to NavRoutes"
 ```
 
@@ -129,17 +129,17 @@ git commit -m "feat: add HOME route to NavRoutes"
 ## Task 3: HomeViewModel — Stats and Recent Calls
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/home/HomeViewModel.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/home/HomeViewModel.kt`
 
 - [ ] **Step 1: Create HomeViewModel**
 
 ```kotlin
-package cc.niaoer.nocall.ui.home
+package cc.niaoer.lowcall.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.data.db.CallLogDao
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.data.db.CallLogDao
+import cc.niaoer.lowcall.data.model.CallLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -147,7 +147,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class HomeViewModel(
-    private val callLogDao: CallLogDao = cc.niaoer.nocall.AppContainer.database.callLogDao()
+    private val callLogDao: CallLogDao = cc.niaoer.lowcall.AppContainer.database.callLogDao()
 ) : ViewModel() {
 
     data class UiState(
@@ -205,7 +205,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/home/HomeViewModel.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/home/HomeViewModel.kt
 git commit -m "feat: add HomeViewModel with stats and recent calls"
 ```
 
@@ -214,12 +214,12 @@ git commit -m "feat: add HomeViewModel with stats and recent calls"
 ## Task 4: HomeScreen — Hero, Quick Cards, Recent List
 
 **Files:**
-- Create: `app/src/main/java/cc/niaoer/nocall/ui/home/HomeScreen.kt`
+- Create: `app/src/main/java/cc/niaoer/lowcall/ui/home/HomeScreen.kt`
 
 - [ ] **Step 1: Create HomeScreen**
 
 ```kotlin
-package cc.niaoer.nocall.ui.home
+package cc.niaoer.lowcall.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -261,8 +261,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.R
+import cc.niaoer.lowcall.data.model.CallLog
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -542,7 +542,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/home/HomeScreen.kt app/src/main/res/values/strings.xml
+git add app/src/main/java/cc/niaoer/lowcall/ui/home/HomeScreen.kt app/src/main/res/values/strings.xml
 git commit -m "feat: add HomeScreen with hero, quick cards, and recent blocked list"
 ```
 
@@ -551,14 +551,14 @@ git commit -m "feat: add HomeScreen with hero, quick cards, and recent blocked l
 ## Task 5: MainActivity — Bottom Navigation + NavHost Update
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/MainActivity.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/MainActivity.kt`
 
 - [ ] **Step 1: Update MainActivity with BottomNavigation**
 
-Replace the `NoCallNavHost` composable and update imports:
+Replace the `LowCallNavHost` composable and update imports:
 
 ```kotlin
-package cc.niaoer.nocall
+package cc.niaoer.lowcall
 
 import android.Manifest
 import android.app.role.RoleManager
@@ -608,15 +608,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import cc.niaoer.nocall.ui.history.CallHistoryScreen
-import cc.niaoer.nocall.ui.home.HomeScreen
-import cc.niaoer.nocall.ui.navigation.NavRoutes
-import cc.niaoer.nocall.ui.rules.RuleEditScreen
-import cc.niaoer.nocall.ui.rules.RulesScreen
-import cc.niaoer.nocall.ui.settings.SettingsScreen
-import cc.niaoer.nocall.ui.test.RuleTestScreen
-import cc.niaoer.nocall.ui.theme.NoCallTheme
-import cc.niaoer.nocall.ui.whitelist.WhitelistScreen
+import cc.niaoer.lowcall.ui.history.CallHistoryScreen
+import cc.niaoer.lowcall.ui.home.HomeScreen
+import cc.niaoer.lowcall.ui.navigation.NavRoutes
+import cc.niaoer.lowcall.ui.rules.RuleEditScreen
+import cc.niaoer.lowcall.ui.rules.RulesScreen
+import cc.niaoer.lowcall.ui.settings.SettingsScreen
+import cc.niaoer.lowcall.ui.test.RuleTestScreen
+import cc.niaoer.lowcall.ui.theme.LowCallTheme
+import cc.niaoer.lowcall.ui.whitelist.WhitelistScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -641,13 +641,13 @@ class MainActivity : ComponentActivity() {
         refreshScreeningStatus()
 
         setContent {
-            NoCallTheme {
+            LowCallTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val screeningEnabled by isScreeningEnabled.collectAsState()
-                    NoCallApp(screeningEnabled = screeningEnabled, onSetup = { requestScreeningRole() })
+                    LowCallApp(screeningEnabled = screeningEnabled, onSetup = { requestScreeningRole() })
                 }
             }
         }
@@ -691,7 +691,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun NoCallApp(screeningEnabled: Boolean, onSetup: () -> Unit) {
+fun LowCallApp(screeningEnabled: Boolean, onSetup: () -> Unit) {
     val navController = rememberNavController()
 
     val bottomNavItems = listOf(
@@ -733,7 +733,7 @@ fun NoCallApp(screeningEnabled: Boolean, onSetup: () -> Unit) {
             if (!screeningEnabled) {
                 SetupBanner(onSetup = onSetup)
             }
-            NoCallNavHost(navController = navController)
+            LowCallNavHost(navController = navController)
         }
     }
 }
@@ -780,7 +780,7 @@ fun SetupBanner(onSetup: () -> Unit) {
 }
 
 @Composable
-fun NoCallNavHost(navController: NavHostController) {
+fun LowCallNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = NavRoutes.HOME
@@ -859,7 +859,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/MainActivity.kt app/src/main/res/values/strings.xml
+git add app/src/main/java/cc/niaoer/lowcall/MainActivity.kt app/src/main/res/values/strings.xml
 git commit -m "feat: add bottom navigation and home screen as start destination"
 ```
 
@@ -868,22 +868,22 @@ git commit -m "feat: add bottom navigation and home screen as start destination"
 ## Task 6: RulesScreen — Tab Filtering + Search + Card Redesign
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/rules/RulesScreen.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/rules/RulesViewModel.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RulesScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/rules/RulesViewModel.kt`
 
 - [ ] **Step 1: Update RulesViewModel with filtering and search**
 
 Replace `RulesViewModel`:
 
 ```kotlin
-package cc.niaoer.nocall.ui.rules
+package cc.niaoer.lowcall.ui.rules
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.AppContainer
-import cc.niaoer.nocall.data.db.BlockRuleDao
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.AppContainer
+import cc.niaoer.lowcall.data.db.BlockRuleDao
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -974,7 +974,7 @@ class RulesViewModel(
 Replace `RulesScreen`:
 
 ```kotlin
-package cc.niaoer.nocall.ui.rules
+package cc.niaoer.lowcall.ui.rules
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -1019,9 +1019,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
-import cc.niaoer.nocall.data.model.BlockRule
-import cc.niaoer.nocall.data.model.RuleType
+import cc.niaoer.lowcall.R
+import cc.niaoer.lowcall.data.model.BlockRule
+import cc.niaoer.lowcall.data.model.RuleType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1203,7 +1203,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/rules/
+git add app/src/main/java/cc/niaoer/lowcall/ui/rules/
 git commit -m "feat: redesign RulesScreen with tab filtering and search"
 ```
 
@@ -1212,14 +1212,14 @@ git commit -m "feat: redesign RulesScreen with tab filtering and search"
 ## Task 7: CallHistoryScreen — Date Grouping + Avatar Styling
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryScreen.kt`
 
 - [ ] **Step 1: Redesign with date grouping**
 
 Replace `CallHistoryScreen`:
 
 ```kotlin
-package cc.niaoer.nocall.ui.history
+package cc.niaoer.lowcall.ui.history
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -1262,10 +1262,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
-import cc.niaoer.nocall.data.normalizePhone
-import cc.niaoer.nocall.data.model.CallAction
-import cc.niaoer.nocall.data.model.CallLog
+import cc.niaoer.lowcall.R
+import cc.niaoer.lowcall.data.normalizePhone
+import cc.niaoer.lowcall.data.model.CallAction
+import cc.niaoer.lowcall.data.model.CallLog
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -1479,7 +1479,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/history/CallHistoryScreen.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/history/CallHistoryScreen.kt
 git commit -m "feat: redesign CallHistoryScreen with date grouping and avatar styling"
 ```
 
@@ -1488,22 +1488,22 @@ git commit -m "feat: redesign CallHistoryScreen with date grouping and avatar st
 ## Task 8: WhitelistScreen — Search Bar + Contact Search
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/whitelist/WhitelistScreen.kt`
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/whitelist/WhitelistViewModel.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/whitelist/WhitelistScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/whitelist/WhitelistViewModel.kt`
 
 - [ ] **Step 1: Update WhitelistViewModel with search**
 
 Replace `WhitelistViewModel`:
 
 ```kotlin
-package cc.niaoer.nocall.ui.whitelist
+package cc.niaoer.lowcall.ui.whitelist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cc.niaoer.nocall.AppContainer
-import cc.niaoer.nocall.data.ContactLookup
-import cc.niaoer.nocall.data.db.WhitelistDao
-import cc.niaoer.nocall.data.model.WhitelistEntry
+import cc.niaoer.lowcall.AppContainer
+import cc.niaoer.lowcall.data.ContactLookup
+import cc.niaoer.lowcall.data.db.WhitelistDao
+import cc.niaoer.lowcall.data.model.WhitelistEntry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -1571,7 +1571,7 @@ class WhitelistViewModel(
 Replace `WhitelistScreen`:
 
 ```kotlin
-package cc.niaoer.nocall.ui.whitelist
+package cc.niaoer.lowcall.ui.whitelist
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -1627,8 +1627,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
-import cc.niaoer.nocall.data.model.WhitelistEntry
+import cc.niaoer.lowcall.R
+import cc.niaoer.lowcall.data.model.WhitelistEntry
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -1880,7 +1880,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/whitelist/
+git add app/src/main/java/cc/niaoer/lowcall/ui/whitelist/
 git commit -m "feat: redesign WhitelistScreen with search bar and contact styling"
 ```
 
@@ -1889,14 +1889,14 @@ git commit -m "feat: redesign WhitelistScreen with search bar and contact stylin
 ## Task 9: RuleTestScreen — Result Card Animation
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/test/RuleTestScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/test/RuleTestScreen.kt`
 
 - [ ] **Step 1: Redesign with animated result card**
 
 Replace `RuleTestScreen`:
 
 ```kotlin
-package cc.niaoer.nocall.ui.test
+package cc.niaoer.lowcall.ui.test
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -1929,7 +1929,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
+import cc.niaoer.lowcall.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1990,7 +1990,7 @@ fun RuleTestScreen(
 }
 
 @Composable
-private fun ResultCard(matchedRule: cc.niaoer.nocall.data.model.BlockRule?) {
+private fun ResultCard(matchedRule: cc.niaoer.lowcall.data.model.BlockRule?) {
     val isBlocked = matchedRule != null
     Card(
         colors = CardDefaults.cardColors(
@@ -2045,7 +2045,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/test/RuleTestScreen.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/test/RuleTestScreen.kt
 git commit -m "feat: redesign RuleTestScreen with animated result card"
 ```
 
@@ -2054,14 +2054,14 @@ git commit -m "feat: redesign RuleTestScreen with animated result card"
 ## Task 10: SettingsScreen — Grouped Settings + About Card
 
 **Files:**
-- Modify: `app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsScreen.kt`
+- Modify: `app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsScreen.kt`
 
 - [ ] **Step 1: Redesign with grouped settings**
 
 Replace `SettingsScreen`:
 
 ```kotlin
-package cc.niaoer.nocall.ui.settings
+package cc.niaoer.lowcall.ui.settings
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -2111,7 +2111,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cc.niaoer.nocall.R
+import cc.niaoer.lowcall.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -2226,7 +2226,7 @@ fun SettingsScreen(
                 iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 title = stringResource(R.string.export_rules),
-                onClick = { exportLauncher.launch("nocall_rules.json") }
+                onClick = { exportLauncher.launch("lowcall_rules.json") }
             )
             SettingItem(
                 icon = Icons.Default.CloudDownload,
@@ -2350,7 +2350,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/src/main/java/cc/niaoer/nocall/ui/settings/SettingsScreen.kt
+git add app/src/main/java/cc/niaoer/lowcall/ui/settings/SettingsScreen.kt
 git commit -m "feat: redesign SettingsScreen with grouped items and about card"
 ```
 
@@ -2407,7 +2407,7 @@ git commit -m "feat: complete UI redesign based on OpenDesign spec"
 
 ## Execution Handoff
 
-**Plan complete and saved to `docs/superpowers/plans/2026-06-19-nocall-ui-redesign.md`. Two execution options:**
+**Plan complete and saved to `docs/superpowers/plans/2026-06-19-lowcall-ui-redesign.md`. Two execution options:**
 
 **1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
 
