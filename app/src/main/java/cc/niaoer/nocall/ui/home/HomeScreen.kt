@@ -270,6 +270,17 @@ private fun RecentBlockedItem(log: CallLog) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                if (log.location != null && log.carrier != null) {
+                    Text(
+                        text = stringResource(
+                            R.string.attribution_format,
+                            log.location,
+                            log.carrier
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 Text(
                     text = "${log.matchedRulePattern ?: "未知规则"} · ${dateFormat.format(Date(log.timestamp))}",
                     style = MaterialTheme.typography.bodySmall,

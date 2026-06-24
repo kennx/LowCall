@@ -203,6 +203,17 @@ private fun CallLogItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
+                    if (log.location != null && log.carrier != null) {
+                        Text(
+                            text = stringResource(
+                                R.string.attribution_format,
+                                log.location,
+                                log.carrier
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     Text(
                         text = if (isBlocked) {
                             "${log.matchedRulePattern ?: "未知规则"} · 响铃 0 秒"
