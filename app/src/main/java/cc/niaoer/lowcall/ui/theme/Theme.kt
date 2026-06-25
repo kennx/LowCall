@@ -1,6 +1,5 @@
 package cc.niaoer.lowcall.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -12,25 +11,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = PrimaryBlueLight,
+    onPrimary = BackgroundDark,
+    primaryContainer = PrimaryBlueDark,
+    onPrimaryContainer = PrimaryBlueLight,
+    secondary = SecondaryBlue,
+    onSecondary = SecondaryBlueDark,
+    error = DangerRed,
+    background = BackgroundDark,
+    onBackground = TextPrimaryDark,
+    surface = SurfaceDark,
+    onSurface = TextPrimaryDark,
+    surfaceVariant = SurfaceDark,
+    onSurfaceVariant = TextSecondaryDark,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = PrimaryBlue,
+    onPrimary = SurfaceLight,
+    primaryContainer = SecondaryBlue,
+    onPrimaryContainer = PrimaryBlueDark,
+    secondary = SecondaryBlueDark,
+    onSecondary = SurfaceLight,
+    error = DangerRed,
+    background = BackgroundLight,
+    onBackground = TextPrimaryLight,
+    surface = SurfaceLight,
+    onSurface = TextPrimaryLight,
+    surfaceVariant = SurfaceLight,
+    onSurfaceVariant = TextSecondaryLight,
 )
 
 @Composable
