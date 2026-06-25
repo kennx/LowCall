@@ -206,8 +206,7 @@ private fun RuleTypeSelector(
             .fillMaxWidth()
             .height(48.dp),
         shape = shape,
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Row(
             modifier = Modifier

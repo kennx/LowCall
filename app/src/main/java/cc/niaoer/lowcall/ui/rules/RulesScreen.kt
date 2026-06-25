@@ -165,7 +165,6 @@ private fun RuleCard(
 ) {
     Card(
         onClick = onClick,
-        elevation = CardDefaults.elevatedCardElevation(),
         colors = CardDefaults.cardColors(
             containerColor = if (rule.enabled)
                 MaterialTheme.colorScheme.surfaceContainerHigh
