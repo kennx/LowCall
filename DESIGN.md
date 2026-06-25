@@ -1,22 +1,19 @@
 ---
 name: LowCall Design System
 colors:
-  primary-blue: "#1A73E8"
-  primary-blue-light: "#669DF6"
-  primary-blue-dark: "#0B57D0"
-  secondary-blue: "#E8F0FE"
-  secondary-blue-dark: "#3C4043"
-  success-green: "#34A853"
-  danger-red: "#B3261E"
-  warning-yellow: "#FBBC04"
-  background-light: "#F8F9FA"
-  surface-light: "#FFFFFF"
-  text-primary-light: "#1C1B1F"
-  text-secondary-light: "#49454F"
-  background-dark: "#141218"
-  surface-dark: "#2B2930"
-  text-primary-dark: "#E6E0E9"
-  text-secondary-dark: "#CAC4D0"
+  primary-ice-blue: "#38BDF8"
+  primary-indigo: "#4F46E5"
+  semantic-emerald: "#10B981"
+  semantic-amber: "#F59E0B"
+  semantic-rose: "#E11D48"
+  background-light: "#F8FAFC"
+  surface-light: "#F1F5F9"
+  text-primary-light: "#0F172A"
+  text-secondary-light: "#475569"
+  background-dark: "#0F172A"
+  surface-dark: "#1E293B"
+  text-primary-dark: "#F8FAFC"
+  text-secondary-dark: "#94A3B8"
 shapes:
   extra-small: "4dp"
   small: "8dp"
@@ -45,19 +42,19 @@ This document defines the design language and visual identity for **LowCall**. I
 ## Core Principles
 
 1. **Material Design 3 (M3) Alignment**: All visual properties (colors, typography, shapes) MUST resolve via `MaterialTheme` token accessors. Hardcoding raw colors (e.g., `Color(0xFF...)`) in components is strictly banned.
-2. **Dynamic Color Support**: Dynamic colors are enabled on Android 12+ (SDK 31+). For older devices, the app falls back to the defined light and dark color schemes based on the "Secure Blue" palette.
+2. **Dynamic Color Support**: Dynamic colors are enabled on Android 12+ (SDK 31+). For older devices, the app falls back to the defined light and dark color schemes based on the "Tech Cool-Tone" palette.
 3. **Accessibility First**: Proper contrast ratios and touch target sizes must be maintained.
 
 ## Color Palette
 
-The app utilizes a "Secure Blue" primary palette to convey trust and clarity, essential for a call screening application.
+The app utilizes a "Tech Cool-Tone" primary palette to convey trust, clarity, and modern geek-chic aesthetics, essential for a system utility.
 
-- **Primary**: Brand Blue (`#1A73E8`) used for primary actions, buttons, and active states.
-- **Semantic**: Green for success (`#34A853`), Red for destructive actions like blocking (`#B3261E`), Yellow for warnings (`#FBBC04`).
-- **Surfaces**: Clean, high-contrast light and dark mode surface definitions to ensure text legibility.
+- **Primary**: Indigo (`#4F46E5`) and Ice Blue (`#38BDF8`) used for primary actions, buttons, and active states.
+- **Semantic**: Emerald for success (`#10B981`), Rose for destructive actions like blocking (`#E11D48`), Amber for warnings (`#F59E0B`).
+- **Surfaces**: Clean Tonal surfaces using Cold Grays (Light) and Deep Slate Navy (Dark) to ensure strong text legibility and spatial depth without borders.
 
 ### Implementation Rule
-When building Compose UI, always use `MaterialTheme.colorScheme.*`. Do NOT map directly to `PrimaryBlue` or `DangerRed` in the view layer.
+When building Compose UI, always use `MaterialTheme.colorScheme.*`. Do NOT map directly to raw hex values in the view layer.
 
 ## Spacing & Layout
 
@@ -92,9 +89,9 @@ Shapes define the corner rounding for components like cards, buttons, and dialog
 - **Large (24.dp)** / **Extra Large (32.dp)**: Dialogs, Bottom Sheets.
 
 ### Elevation
-Material 3 relies on **Tonal Elevation** (especially in Dark Mode) rather than heavy drop shadows.
-- Use standard `CardDefaults.cardElevation()` for Cards.
-- Let M3 handle surface colors automatically when elevating components.
+Material 3 relies on **Tonal Elevation** rather than heavy drop shadows or explicit borders.
+- **Cards & Surfaces**: Use default `CardDefaults.cardColors()` to let the surface/surfaceVariant container color differentiate itself from the background.
+- **Borders/Shadows**: Explicit `BorderStroke` and `elevation = CardDefaults.elevatedCardElevation()` MUST BE AVOIDED. Use Clean Tonal design (pure flat colors pulling depth from contrast).
 
 ### Implementation Rule
 Always use `MaterialTheme.shapes.*` for rounding. Do not hardcode `RoundedCornerShape(X.dp)` in individual screens.

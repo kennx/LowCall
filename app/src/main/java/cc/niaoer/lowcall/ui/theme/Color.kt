@@ -2,27 +2,21 @@ package cc.niaoer.lowcall.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Brand Colors (Secure Blue)
-val PrimaryBlue = Color(0xFF1A73E8)
-val PrimaryBlueLight = Color(0xFF669DF6)
-val PrimaryBlueDark = Color(0xFF0B57D0)
+// Tech Cool-Tone Accents
+val IceBlue = Color(0xFF38BDF8)
+val Indigo = Color(0xFF4F46E5)
+val Emerald = Color(0xFF10B981)
+val Amber = Color(0xFFF59E0B)
+val Rose = Color(0xFFE11D48)
 
-val SecondaryBlue = Color(0xFFE8F0FE)
-val SecondaryBlueDark = Color(0xFF3C4043)
+// Light Mode (Cold Grays)
+val BackgroundLight = Color(0xFFF8FAFC)
+val SurfaceLight = Color(0xFFF1F5F9)
+val TextPrimaryLight = Color(0xFF0F172A)
+val TextSecondaryLight = Color(0xFF475569)
 
-// Semantic Colors
-val SuccessGreen = Color(0xFF34A853)
-val DangerRed = Color(0xFFB3261E)
-val WarningYellow = Color(0xFFFBBC04)
-
-// Surface & Background Colors (Light)
-val BackgroundLight = Color(0xFFF8F9FA)
-val SurfaceLight = Color(0xFFFFFFFF)
-val TextPrimaryLight = Color(0xFF1C1B1F)
-val TextSecondaryLight = Color(0xFF49454F)
-
-// Surface & Background Colors (Dark)
-val BackgroundDark = Color(0xFF141218)
-val SurfaceDark = Color(0xFF2B2930)
-val TextPrimaryDark = Color(0xFFE6E0E9)
-val TextSecondaryDark = Color(0xFFCAC4D0)
+// Dark Mode (Deep Slate Navy)
+val BackgroundDark = Color(0xFF0F172A)
+val SurfaceDark = Color(0xFF1E293B)
+val TextPrimaryDark = Color(0xFFF8FAFC)
+val TextSecondaryDark = Color(0xFF94A3B8)
