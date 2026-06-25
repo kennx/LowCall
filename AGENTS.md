@@ -7,6 +7,10 @@
 ## 1. System Architecture & Topological Map
 [Execution_Context]: Before modifying ANY file, you MUST cross-reference its path with this routing matrix to determine your exact permission boundaries.
 
+- `[Path: DESIGN.md]`
+  - STATUS: Design System Contract. Contains machine-readable and human-readable definitions of colors, typography, shapes, and edge-to-edge constraints.
+  - MANDATORY: MUST be read and applied by any agent before modifying or creating Jetpack Compose UI code.
+
 - `[Path: app/src/main/java/cc/niaoer/lowcall/LowCallApplication.kt]`
   - STATUS: Application entry point. Initializes `AppContainer` in `onCreate()`. Exposes `appContainer` as `lateinit`.
 - `[Path: app/src/main/java/cc/niaoer/lowcall/MainActivity.kt]`
@@ -108,6 +112,7 @@
 - `[Insets]`: `enableEdgeToEdge()` is active. When using `Scaffold`, you MUST consume its `PaddingValues` via `Modifier.padding(innerPadding)`. Use `WindowInsets` or `safeDrawingPadding()` for non-Scaffold screens.
 - `[LazyLayout]`: Every `items()` invocation within `LazyColumn`/`LazyRow` MUST include a deterministic `key` parameter. BANNED: Relying on default positional index.
 - `[Theme_Tokens]`: ALL visual properties (colors, typography, shapes) MUST resolve via `MaterialTheme` token accessors. BANNED: Raw `Color(0xFF...)` instantiation in components, hardcoded font sizes, or literal shape values.
+- `[Design_System_Contract]`: MUST cross-reference `[Path: DESIGN.md]` in the project root for UI design rationale, color palette, and component spacing BEFORE generating or modifying any UI layer code.
 
 ## 5. Data & Service Performance Constraints
 - `[Call_Screening_Latency]`: `onScreenCall()` MUST complete within 5 seconds (system-imposed limit). The contacts lookup timeout of 500ms is the safety valve. DO NOT add new I/O operations inside the `runBlocking` block without an explicit timeout bound.
