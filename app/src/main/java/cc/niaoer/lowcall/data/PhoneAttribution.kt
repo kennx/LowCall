@@ -31,18 +31,20 @@ class PhoneAttribution(data: ByteArray) {
         var left = 0
         var right = indexCount - 1
 
+        val localBuffer = buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN)
+
         while (left <= right) {
             val mid = (left + right) / 2
             val pos = indexOffset + mid * INDEX_ENTRY_SIZE
 
-            buffer.position(pos)
-            val midPrefix = buffer.int
+            localBuffer.position(pos)
+            val midPrefix = localBuffer.int
 
             when {
                 midPrefix == prefix -> {
-                    val recordOffset = buffer.int
-                    val ispCode = buffer.get().toInt() and 0xFF
-                    val record = readRecord(recordOffset) ?: return null
+                    val recordOffset = localBuffer.int
+                    val ispCode = localBuffer.get().toInt() and 0xFF
+                    val record = readRecord(localBuffer, recordOffset) ?: return null
                     val parts = record.split("|")
                     if (parts.size < 2) return null
                     return AttributionResult(
@@ -58,11 +60,11 @@ class PhoneAttribution(data: ByteArray) {
         return null
     }
 
-    private fun readRecord(offset: Int): String? {
-        buffer.position(offset)
+    private fun readRecord(localBuffer: ByteBuffer, offset: Int): String? {
+        localBuffer.position(offset)
         val bytes = mutableListOf<Byte>()
         while (true) {
-            val b = buffer.get()
+            val b = localBuffer.get()
             if (b == 0.toByte()) break
             bytes.add(b)
         }
