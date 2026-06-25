@@ -97,7 +97,7 @@ fun WhitelistScreen(
                 ),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(cc.niaoer.lowcall.R.string.back))
                     }
                 }
             )
@@ -118,7 +118,7 @@ fun WhitelistScreen(
                 value = uiState.searchQuery,
                 onValueChange = viewModel::setSearchQuery,
                 placeholder = { Text("搜索联系人或号码") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = stringResource(cc.niaoer.lowcall.R.string.search)) },
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
