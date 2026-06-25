@@ -189,13 +189,13 @@ private fun CallLogItem(
                         )
                     } else {
                         Icon(
-                            Icons.Default.CallReceived,
+                            Icons.AutoMirrored.Filled.CallReceived,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = log.phoneNumber,
