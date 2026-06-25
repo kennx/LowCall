@@ -1,4 +1,4 @@
-# LowCall
+# <img src="docs/icon.webp" width="48" height="48" style="vertical-align: bottom" /> LowCall
 
 LowCall 是一个 Android 来电拦截应用，通过可配置的匹配规则（精确、通配符、正则表达式）自动拦截骚扰电话。
 
