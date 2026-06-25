@@ -240,8 +240,6 @@ fun LowCallNavHost(navController: NavHostController) {
     ) {
         composable(NavRoutes.HOME) {
             HomeScreen(
-                onNavigateToRules = { navController.navigate(NavRoutes.RULES) },
-                onNavigateToHistory = { navController.navigate(NavRoutes.HISTORY) },
                 onNavigateToTest = { navController.navigate(NavRoutes.RULE_TEST) },
                 onNavigateToAddRule = { navController.navigate(NavRoutes.RULE_ADD) }
             )
@@ -278,19 +276,13 @@ fun LowCallNavHost(navController: NavHostController) {
             )
         }
         composable(NavRoutes.WHITELIST) {
-            WhitelistScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
+            WhitelistScreen()
         }
         composable(NavRoutes.HISTORY) {
-            CallHistoryScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
+            CallHistoryScreen()
         }
         composable(NavRoutes.SETTINGS) {
-            SettingsScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
+            SettingsScreen()
         }
     }
 }

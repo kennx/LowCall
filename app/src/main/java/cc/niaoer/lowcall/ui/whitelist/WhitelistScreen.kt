@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
@@ -62,7 +61,6 @@ import cc.niaoer.lowcall.data.model.WhitelistEntry
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhitelistScreen(
-    onNavigateBack: () -> Unit,
     viewModel: WhitelistViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -94,12 +92,7 @@ fun WhitelistScreen(
                 title = { Text(stringResource(R.string.whitelist_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
-                ),
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(cc.niaoer.lowcall.R.string.back))
-                    }
-                }
+                )
             )
         },
         floatingActionButton = {

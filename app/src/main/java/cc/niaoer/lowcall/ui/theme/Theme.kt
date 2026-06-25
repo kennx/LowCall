@@ -11,58 +11,57 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = IceBlue,
-    onPrimary = BackgroundDark,
-    primaryContainer = IceBlue,
-    onPrimaryContainer = BackgroundDark,
-    secondary = IceBlue,
-    onSecondary = BackgroundDark,
-    secondaryContainer = IceBlue,
-    onSecondaryContainer = BackgroundDark,
+    primary = GoogleBlue,
+    onPrimary = TrueBlack,
+    primaryContainer = GoogleBlue,
+    onPrimaryContainer = TrueBlack,
+    secondary = GoogleBlue,
+    onSecondary = TrueBlack,
+    secondaryContainer = GoogleBlue,
+    onSecondaryContainer = TrueBlack,
     error = Rose,
-    background = BackgroundDark,
+    background = TrueBlack,
     onBackground = TextPrimaryDark,
     surface = SurfaceDark,
     onSurface = TextPrimaryDark,
     surfaceVariant = SurfaceDark,
     onSurfaceVariant = TextSecondaryDark,
     surfaceTint = androidx.compose.ui.graphics.Color.Transparent,
-    surfaceContainerLowest = BackgroundDark,
-    surfaceContainerLow = BackgroundDark,
+    surfaceContainerLowest = TrueBlack,
+    surfaceContainerLow = TrueBlack,
     surfaceContainer = SurfaceDark,
-    surfaceContainerHigh = SurfaceDark,
-    surfaceContainerHighest = SurfaceDark
+    surfaceContainerHigh = SurfaceDarkHigh,
+    surfaceContainerHighest = SurfaceDarkHigh
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Indigo,
-    onPrimary = BackgroundLight,
-    primaryContainer = Indigo,
-    onPrimaryContainer = BackgroundLight,
-    secondary = IceBlue,
-    onSecondary = BackgroundLight,
-    secondaryContainer = IceBlue,
-    onSecondaryContainer = BackgroundLight,
+    primary = GoogleBlue,
+    onPrimary = PureWhite,
+    primaryContainer = GoogleBlue,
+    onPrimaryContainer = PureWhite,
+    secondary = GoogleBlue,
+    onSecondary = PureWhite,
+    secondaryContainer = GoogleBlue,
+    onSecondaryContainer = PureWhite,
     error = Rose,
-    background = BackgroundLight,
+    background = PureWhite,
     onBackground = TextPrimaryLight,
     surface = SurfaceLight,
     onSurface = TextPrimaryLight,
     surfaceVariant = SurfaceLight,
     onSurfaceVariant = TextSecondaryLight,
     surfaceTint = androidx.compose.ui.graphics.Color.Transparent,
-    surfaceContainerLowest = BackgroundLight,
-    surfaceContainerLow = BackgroundLight,
+    surfaceContainerLowest = PureWhite,
+    surfaceContainerLow = PureWhite,
     surfaceContainer = SurfaceLight,
-    surfaceContainerHigh = SurfaceLight,
-    surfaceContainerHighest = SurfaceLight
+    surfaceContainerHigh = SurfaceLightHigh,
+    surfaceContainerHighest = SurfaceLightHigh
 )
 
 @Composable
 fun LowCallTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is disabled by default to enforce the brand's Tech Cool-Tone palette.
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

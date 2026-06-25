@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.automirrored.filled.CallReceived
 import androidx.compose.material3.AssistChip
@@ -53,7 +52,6 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CallHistoryScreen(
-    onNavigateBack: () -> Unit,
     viewModel: CallHistoryViewModel = viewModel()
 ) {
     val logs by viewModel.logs.collectAsStateWithLifecycle()
@@ -65,12 +63,7 @@ fun CallHistoryScreen(
                 title = { Text(stringResource(R.string.history_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
-                ),
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(cc.niaoer.lowcall.R.string.back))
-                    }
-                }
+                )
             )
         }
     ) { paddingValues ->

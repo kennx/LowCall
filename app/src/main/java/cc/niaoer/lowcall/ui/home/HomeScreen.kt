@@ -17,8 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Rule
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -48,8 +47,6 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToRules: () -> Unit,
-    onNavigateToHistory: () -> Unit,
     onNavigateToTest: () -> Unit,
     onNavigateToAddRule: () -> Unit,
     viewModel: HomeViewModel = viewModel()
@@ -82,8 +79,6 @@ fun HomeScreen(
 
             item {
                 QuickGrid(
-                    onNavigateToRules = onNavigateToRules,
-                    onNavigateToHistory = onNavigateToHistory,
                     onNavigateToTest = onNavigateToTest,
                     onNavigateToAddRule = onNavigateToAddRule
                 )
@@ -145,46 +140,33 @@ private fun HeroSection(
 
 @Composable
 private fun QuickGrid(
-    onNavigateToRules: () -> Unit,
-    onNavigateToHistory: () -> Unit,
     onNavigateToTest: () -> Unit,
     onNavigateToAddRule: () -> Unit
 ) {
     val items = listOf(
-        Triple(stringResource(R.string.quick_rules), stringResource(R.string.quick_rules_hint)) { onNavigateToRules() },
-        Triple(stringResource(R.string.quick_history), stringResource(R.string.quick_history_hint)) { onNavigateToHistory() },
         Triple(stringResource(R.string.quick_test), stringResource(R.string.quick_test_hint)) { onNavigateToTest() },
         Triple(stringResource(R.string.quick_add), stringResource(R.string.quick_add_hint)) { onNavigateToAddRule() }
     )
 
     val icons = listOf(
-        Icons.Default.Rule,
-        Icons.Default.History,
         Icons.Default.Science,
         Icons.Default.Add
     )
 
-    Column(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        for (row in 0 until 2) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                for (col in 0 until 2) {
-                    val index = row * 2 + col
-                    val (label, hint, onClick) = items[index]
-                    QuickCard(
-                        label = label,
-                        hint = hint,
-                        icon = icons[index],
-                        onClick = onClick,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
+        items.forEachIndexed { index, (label, hint, onClick) ->
+            QuickCard(
+                label = label,
+                hint = hint,
+                icon = icons[index],
+                onClick = onClick,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
