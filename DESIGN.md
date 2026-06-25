@@ -55,6 +55,7 @@ The app utilizes a "Tech Cool-Tone" primary palette to convey trust, clarity, an
 
 ### Implementation Rule
 When building Compose UI, always use `MaterialTheme.colorScheme.*`. Do NOT map directly to raw hex values in the view layer.
+**M3 Baseline Override**: The application theme MUST explicitly define all container colors (e.g., `surfaceContainer`, `secondaryContainer`) and set `surfaceTint = Color.Transparent`. This is required to completely override the Material 3 default baseline (which heavily features purple/pink tints) and strictly enforce the "Tech Cool-Tone" palette.
 
 ## Spacing & Layout
 

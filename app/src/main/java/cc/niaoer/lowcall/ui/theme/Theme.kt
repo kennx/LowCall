@@ -13,10 +13,12 @@ import androidx.compose.ui.platform.LocalContext
 private val DarkColorScheme = darkColorScheme(
     primary = IceBlue,
     onPrimary = BackgroundDark,
-    primaryContainer = Indigo,
-    onPrimaryContainer = IceBlue,
-    secondary = Emerald,
+    primaryContainer = IceBlue,
+    onPrimaryContainer = BackgroundDark,
+    secondary = IceBlue,
     onSecondary = BackgroundDark,
+    secondaryContainer = IceBlue,
+    onSecondaryContainer = BackgroundDark,
     error = Rose,
     background = BackgroundDark,
     onBackground = TextPrimaryDark,
@@ -24,15 +26,23 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = TextPrimaryDark,
     surfaceVariant = SurfaceDark,
     onSurfaceVariant = TextSecondaryDark,
+    surfaceTint = androidx.compose.ui.graphics.Color.Transparent,
+    surfaceContainerLowest = BackgroundDark,
+    surfaceContainerLow = BackgroundDark,
+    surfaceContainer = SurfaceDark,
+    surfaceContainerHigh = SurfaceDark,
+    surfaceContainerHighest = SurfaceDark
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Indigo,
-    onPrimary = SurfaceLight,
-    primaryContainer = IceBlue,
-    onPrimaryContainer = Indigo,
-    secondary = Emerald,
-    onSecondary = SurfaceLight,
+    onPrimary = BackgroundLight,
+    primaryContainer = Indigo,
+    onPrimaryContainer = BackgroundLight,
+    secondary = IceBlue,
+    onSecondary = BackgroundLight,
+    secondaryContainer = IceBlue,
+    onSecondaryContainer = BackgroundLight,
     error = Rose,
     background = BackgroundLight,
     onBackground = TextPrimaryLight,
@@ -40,6 +50,12 @@ private val LightColorScheme = lightColorScheme(
     onSurface = TextPrimaryLight,
     surfaceVariant = SurfaceLight,
     onSurfaceVariant = TextSecondaryLight,
+    surfaceTint = androidx.compose.ui.graphics.Color.Transparent,
+    surfaceContainerLowest = BackgroundLight,
+    surfaceContainerLow = BackgroundLight,
+    surfaceContainer = SurfaceLight,
+    surfaceContainerHigh = SurfaceLight,
+    surfaceContainerHighest = SurfaceLight
 )
 
 @Composable
