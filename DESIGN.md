@@ -42,7 +42,7 @@ This document defines the design language and visual identity for **LowCall**. I
 ## Core Principles
 
 1. **Material Design 3 (M3) Alignment**: All visual properties (colors, typography, shapes) MUST resolve via `MaterialTheme` token accessors. Hardcoding raw colors (e.g., `Color(0xFF...)`) in components is strictly banned.
-2. **Dynamic Color Support**: Dynamic colors are enabled on Android 12+ (SDK 31+). For older devices, the app falls back to the defined light and dark color schemes based on the "Tech Cool-Tone" palette.
+2. **Dynamic Color Support**: Dynamic colors are DISABLED by default to enforce the "Tech Cool-Tone" brand identity on all devices, regardless of the OS version.
 3. **Accessibility First**: Proper contrast ratios and touch target sizes must be maintained.
 
 ## Color Palette
