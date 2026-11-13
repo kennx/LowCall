@@ -41,7 +41,7 @@
 - `[Path: app/src/main/java/cc/niaoer/lowcall/service/NotificationHelper.kt]`
   - STATUS: Singleton object. Creates notification channel "call_blocking" (API 26+), shows blocked-call notification with phone number and rule description. Respects `POST_NOTIFICATIONS` permission on API 33+.
 - `[Path: app/src/main/java/cc/niaoer/lowcall/ui/theme/.*]`
-  - STATUS: Design token layer. `Color.kt` (Purple/Pink palette constants), `Theme.kt` (dynamic/static theme switching), `Type.kt` (Typography), `Shape.kt` (rounded corners).
+  - STATUS: Design token layer. `Color.kt` (Google Blue palette constants), `Theme.kt` (dynamic/static theme switching), `Type.kt` (Typography), `Shape.kt` (rounded corners).
   - CONSTRAINT: `[Dynamic_Color]` gate in `Theme.kt` (`Build.VERSION.SDK_INT >= Build.VERSION_CODES.S`) MUST be preserved. ALL new color tokens MUST be defined in `Color.kt`, NOT inline in components. When removing a feature, you MUST grep `Color.kt` for tokens it introduced and delete any that are now unreferenced.
 - `[Path: app/src/main/java/cc/niaoer/lowcall/ui/navigation/NavRoutes.kt]`
   - STATUS: Route constants. HOME, RULES, RULE_ADD, RULE_EDIT ("rules/{ruleId}"), RULE_TEST, HISTORY, SETTINGS, WHITELIST. Helper `ruleEdit(id)` constructs parameterized route.
@@ -61,7 +61,7 @@
 - `[API_Boundary]`: minSdk = 24. NEVER use APIs requiring SDK > 24 unless explicitly gated inside `Build.VERSION.SDK_INT >= ...`. Known gates: `RoleManager.ROLE_CALL_SCREENING` (API 29+), dynamic color (API 31+), `POST_NOTIFICATIONS` permission (API 33+), notification channel (API 26+).
 - `[JDK_Boundary]`: Java 11 bytecode target (`JavaVersion.VERSION_11`). NEVER introduce syntax requiring higher JVM versions.
 - `[Version_Truth]`: ALL dependency versions MUST be read from and written to `gradle/libs.versions.toml`. BANNED: Hardcoding versions in `app/build.gradle.kts`. Compose libraries without explicit versions in the catalog use the Compose BOM for version alignment.
-- `[Dynamic_Color]`: In `Theme.kt`, dynamic colors are ONLY enabled when `Build.VERSION.SDK_INT >= Build.VERSION_CODES.S`. Preserve this fallback with custom Purple/Pink `ColorScheme`.
+- `[Dynamic_Color]`: In `Theme.kt`, dynamic colors are ONLY enabled when `Build.VERSION.SDK_INT >= Build.VERSION_CODES.S`. Preserve this fallback with custom Google Blue `ColorScheme`.
 - `[i18n_Isolation]`: ALL user-visible strings MUST be localized in `res/values/strings.xml`. BANNED: Hardcoded UI strings in `.kt` bodies. When adding locales, keep translations consistent across all supported language directories.
 - `[Language]`: Respond in the same language the user uses (git commits excepted, which MUST use Conventional Commits in English).
 - `[Single_Module]`: Only `:app` exists today. If a new submodule is ever added, update `settings.gradle.kts` and this guide.

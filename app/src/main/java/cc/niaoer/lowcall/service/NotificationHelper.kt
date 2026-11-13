@@ -14,6 +14,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import cc.niaoer.lowcall.MainActivity
 import cc.niaoer.lowcall.R
+import cc.niaoer.lowcall.data.formatLocationForDisplay
+import cc.niaoer.lowcall.data.formatPhoneForDisplay
 
 object NotificationHelper {
     const val CHANNEL_ID = "call_blocking"
@@ -54,15 +56,19 @@ object NotificationHelper {
         )
 
         val attributionPart = buildString {
-            if (location != null) append(location)
+            if (location != null) append(formatLocationForDisplay(location))
             if (location != null && carrier != null) append(" · ")
             if (carrier != null) append(carrier)
         }
 
+        val display = formatPhoneForDisplay(phoneNumber)
+        val formattedNumber = display.extension?.let { extension ->
+            context.getString(R.string.phone_with_extension, display.number, extension)
+        } ?: display.number
         val contentText = if (attributionPart.isNotEmpty()) {
-            "号码: $phoneNumber · $attributionPart"
+            "号码: $formattedNumber · $attributionPart"
         } else {
-            "号码: $phoneNumber"
+            "号码: $formattedNumber"
         }
 
         val description = if (ruleDescription.isNotBlank()) {

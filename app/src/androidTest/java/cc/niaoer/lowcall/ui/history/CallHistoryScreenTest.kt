@@ -1,9 +1,14 @@
 package cc.niaoer.lowcall.ui.history
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.Density
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -11,11 +16,16 @@ import cc.niaoer.lowcall.AppContainer
 import cc.niaoer.lowcall.LowCallApplication
 import cc.niaoer.lowcall.R
 import cc.niaoer.lowcall.data.db.AppDatabase
+import cc.niaoer.lowcall.data.model.BlockRule
 import cc.niaoer.lowcall.data.model.CallAction
 import cc.niaoer.lowcall.data.model.CallLog
+import cc.niaoer.lowcall.data.model.RuleType
 import cc.niaoer.lowcall.ui.theme.LowCallTheme
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -48,61 +58,128 @@ class CallHistoryScreenTest {
     }
 
     @Test
-    fun testCallHistoryScreenDisplaysDistinctAllowReasons() {
+    fun historyDisplaysFormattedNumbersAndDistinctAllowReasons() {
         runBlocking {
-            // Insert logs with different allow reasons
-            val log1 = CallLog(
-                phoneNumber = "13800138001",
-                action = CallAction.ALLOWED,
-                allowReason = "whitelist",
-                timestamp = System.currentTimeMillis()
+            listOf(
+                "whitelist" to "13800138001",
+                "contacts" to "13800138002",
+                "no_match" to "13800138003"
+            ).forEachIndexed { index, (reason, number) ->
+                db.callLogDao().insert(
+                    CallLog(
+                        phoneNumber = number,
+                        action = CallAction.ALLOWED,
+                        allowReason = reason,
+                        timestamp = System.currentTimeMillis() - index * 1000
+                    )
+                )
+            }
+            db.callLogDao().insert(
+                CallLog(
+                    phoneNumber = "13800138004",
+                    action = CallAction.ALLOWED,
+                    allowReason = null,
+                    timestamp = System.currentTimeMillis() - 3000
+                )
             )
-            val log2 = CallLog(
-                phoneNumber = "13800138002",
-                action = CallAction.ALLOWED,
-                allowReason = "contacts",
-                timestamp = System.currentTimeMillis() - 1000
-            )
-            val log3 = CallLog(
-                phoneNumber = "13800138003",
-                action = CallAction.ALLOWED,
-                allowReason = "no_match",
-                timestamp = System.currentTimeMillis() - 2000
-            )
-            val log4 = CallLog(
-                phoneNumber = "13800138004",
-                action = CallAction.ALLOWED,
-                allowReason = null,
-                timestamp = System.currentTimeMillis() - 3000
-            )
+        }
+        setHistoryContent()
 
-            db.callLogDao().insert(log1)
-            db.callLogDao().insert(log2)
-            db.callLogDao().insert(log3)
-            db.callLogDao().insert(log4)
+        composeTestRule.onNodeWithText(app.getString(R.string.allowed_whitelist)).assertExists()
+        composeTestRule.onNodeWithText(app.getString(R.string.allowed_contacts)).assertExists()
+        composeTestRule.onNodeWithText(app.getString(R.string.allowed_no_match)).assertExists()
+        composeTestRule.onAllNodesWithText(app.getString(R.string.allowed)).assertCountEquals(1)
+        composeTestRule.onNodeWithText("138 0013 8001").assertIsDisplayed()
+    }
 
-            val viewModel = CallHistoryViewModel(app)
+    @Test
+    fun allowedCallBlacklistSupportsCancelConfirmAndFeedback() {
+        runBlocking {
+            db.callLogDao().insert(
+                CallLog(phoneNumber = "13800138001", action = CallAction.ALLOWED)
+            )
+        }
+        setHistoryContent()
+        val action = app.getString(R.string.add_to_blacklist)
 
-            // Set screen content
-            composeTestRule.setContent {
+        composeTestRule.onNodeWithText(action).performClick()
+        composeTestRule.onAllNodesWithText(app.getString(R.string.blacklist_confirm_title))
+            .assertCountEquals(2)
+        composeTestRule.onNodeWithText(app.getString(R.string.cancel)).performClick()
+        assertNull(runBlocking { db.blockRuleDao().findExact("13800138001") })
+
+        composeTestRule.onNodeWithText(action).performClick()
+        composeTestRule.onNodeWithText(app.getString(R.string.confirm)).performClick()
+        composeTestRule.waitUntil(3000) {
+            composeTestRule.onAllNodesWithText(app.getString(R.string.blacklist_added))
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        assertTrue(runBlocking { db.blockRuleDao().findExact("13800138001") != null })
+    }
+
+    @Test
+    fun existingBlacklistShowsExistingFeedbackWithoutDuplicate() {
+        runBlocking {
+            db.blockRuleDao().insert(
+                BlockRule(pattern = "13800138001", ruleType = RuleType.EXACT)
+            )
+            db.callLogDao().insert(
+                CallLog(phoneNumber = "13800138001", action = CallAction.ALLOWED)
+            )
+        }
+        setHistoryContent()
+
+        composeTestRule.onNodeWithText(app.getString(R.string.add_to_blacklist)).performClick()
+        composeTestRule.onNodeWithText(app.getString(R.string.confirm)).performClick()
+        composeTestRule.waitUntil(3000) {
+            composeTestRule.onAllNodesWithText(app.getString(R.string.blacklist_exists))
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        assertTrue(runBlocking { db.blockRuleDao().getAll().first().size == 1 })
+    }
+
+    @Test
+    fun blockedLogKeepsWhitelistAction() {
+        runBlocking {
+            db.callLogDao().insert(
+                CallLog(phoneNumber = "02169619151", action = CallAction.BLOCKED)
+            )
+        }
+        setHistoryContent()
+
+        composeTestRule.onNodeWithText("021 6961 9151").assertIsDisplayed()
+        composeTestRule.onNodeWithText(app.getString(R.string.add_to_whitelist)).assertIsDisplayed()
+    }
+
+    @Test
+    fun largeFontKeepsBlacklistActionReachable() {
+        runBlocking {
+            db.callLogDao().insert(
+                CallLog(
+                    phoneNumber = "+8613800138001",
+                    action = CallAction.ALLOWED,
+                    allowReason = "contacts",
+                    location = "广东省深圳市",
+                    carrier = "中国移动"
+                )
+            )
+        }
+        setHistoryContent(fontScale = 2f)
+
+        composeTestRule.onNodeWithText(app.getString(R.string.add_to_blacklist)).assertIsDisplayed()
+    }
+
+    private fun setHistoryContent(fontScale: Float = 1f) {
+        val viewModel = CallHistoryViewModel(app)
+        composeTestRule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(
+                LocalDensity provides Density(density.density, fontScale = fontScale)
+            ) {
                 LowCallTheme {
                     CallHistoryScreen(viewModel = viewModel)
                 }
             }
-
-            // Wait for UI to idle and assert presence of strings
-            composeTestRule.waitForIdle()
-
-            // Get resource strings
-            val whitelistStr = app.getString(R.string.allowed_whitelist)
-            val contactsStr = app.getString(R.string.allowed_contacts)
-            val noMatchStr = app.getString(R.string.allowed_no_match)
-            val legacyStr = app.getString(R.string.allowed)
-
-            composeTestRule.onNodeWithText(whitelistStr).assertExists()
-            composeTestRule.onNodeWithText(contactsStr).assertExists()
-            composeTestRule.onNodeWithText(noMatchStr).assertExists()
-            composeTestRule.onAllNodesWithText(legacyStr).assertCountEquals(5)
         }
     }
 }

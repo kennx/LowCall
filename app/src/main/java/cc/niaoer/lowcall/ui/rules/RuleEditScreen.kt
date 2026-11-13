@@ -1,8 +1,5 @@
 package cc.niaoer.lowcall.ui.rules
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,10 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,7 +18,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,14 +80,17 @@ fun RuleEditScreen(
                 ),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(cc.niaoer.lowcall.R.string.back))
+                        Icon(
+                            painter = painterResource(R.drawable.ic_back_solid),
+                            contentDescription = stringResource(R.string.back)
+                        )
                     }
                 },
                 actions = {
                     if (!state.isNew) {
                         IconButton(onClick = { viewModel.delete() }) {
                             Icon(
-                                Icons.Default.Delete,
+                                painter = painterResource(R.drawable.ic_delete_solid),
                                 contentDescription = stringResource(R.string.delete)
                             )
                         }
@@ -102,6 +103,7 @@ fun RuleEditScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
             OutlinedTextField(
@@ -195,51 +197,18 @@ private fun RuleTypeSelector(
     modifier: Modifier = Modifier
 ) {
     val options = listOf(
-        RuleType.REGEX to "正则",
-        RuleType.WILDCARD to "通配",
-        RuleType.EXACT to "精确"
+        RuleType.REGEX to stringResource(R.string.rule_type_regex),
+        RuleType.WILDCARD to stringResource(R.string.rule_type_wildcard),
+        RuleType.EXACT to stringResource(R.string.rule_type_exact)
     )
-    val shape = RoundedCornerShape(4.dp)
-
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(48.dp),
-        shape = shape,
-        color = MaterialTheme.colorScheme.surfaceVariant
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            options.forEach { (type, label) ->
-                val isSelected = selected == type
-                Surface(
-                    onClick = { onSelect(type) },
-                    modifier = Modifier.weight(1f),
-                    shape = shape,
-                    color = if (isSelected)
-                        MaterialTheme.colorScheme.secondaryContainer
-                    else
-                        MaterialTheme.colorScheme.surface
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = if (isSelected)
-                                MaterialTheme.colorScheme.onSecondaryContainer
-                            else
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
+    SingleChoiceSegmentedButtonRow(modifier = modifier.fillMaxWidth()) {
+        options.forEachIndexed { index, (type, label) ->
+            SegmentedButton(
+                selected = selected == type,
+                onClick = { onSelect(type) },
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                label = { Text(text = label, style = MaterialTheme.typography.labelLarge) }
+            )
         }
     }
 }

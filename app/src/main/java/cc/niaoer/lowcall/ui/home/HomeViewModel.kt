@@ -5,17 +5,21 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cc.niaoer.lowcall.LowCallApplication
 import cc.niaoer.lowcall.data.model.CallLog
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.util.Calendar
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
-    private val callLogDao = (application as LowCallApplication).appContainer.callLogDao
+    private val container = (application as LowCallApplication).appContainer
+    private val callLogDao = container.callLogDao
 
     data class UiState(
         val totalBlocked: Int = 0,
@@ -25,6 +29,21 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     )
 
     private val _midnightStart = MutableStateFlow(getMidnightStart())
+    private val recentBlocked = callLogDao.getRecentBlockedFlow(3)
+        .map { logs ->
+            logs.map { log ->
+                if (log.location != null) {
+                    log
+                } else {
+                    val attribution = container.phoneAttribution.lookupAny(log.phoneNumber)
+                    log.copy(
+                        location = attribution?.let { "${it.province}${it.city}" },
+                        carrier = attribution?.carrier?.ifBlank { null }
+                    )
+                }
+            }
+        }
+        .flowOn(Dispatchers.IO)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<UiState> = _midnightStart.flatMapLatest { midnight ->
@@ -37,7 +56,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             callLogDao.getTotalBlockedCountFlow(),
             callLogDao.getBlockedCountSinceFlow(midnight),
             callLogDao.getBlockedCountSinceFlow(weekStart),
-            callLogDao.getRecentBlockedFlow(3)
+            recentBlocked
         ) { total, today, week, recent ->
             UiState(
                 totalBlocked = total,

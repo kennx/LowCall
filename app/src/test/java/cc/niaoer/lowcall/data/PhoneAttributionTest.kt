@@ -19,7 +19,8 @@ class PhoneAttributionTest {
         //           "北京|北京|100000|010\0"
         val record1 = "广东|深圳|518000|0755".toByteArray(Charsets.UTF_8) + byteArrayOf(0)
         val record2 = "北京|北京|100000|010".toByteArray(Charsets.UTF_8) + byteArrayOf(0)
-        val recordArea = record1 + record2
+        val record3 = "上海|上海|200000|021".toByteArray(Charsets.UTF_8) + byteArrayOf(0)
+        val recordArea = record1 + record2 + record3
 
         val headerSize = 8
         val recordAreaStart = headerSize
@@ -110,5 +111,51 @@ class PhoneAttributionTest {
         val result = attr.lookup("13300001111")
         assertNotNull(result)
         assertEquals("中国电信", result!!.carrier)
+    }
+
+    @Test
+    fun `lookup landline with two digit area code`() {
+        val result = attribution.lookupLandline("02169619151")
+        assertNotNull(result)
+        assertEquals("上海", result!!.province)
+        assertEquals("上海", result.city)
+        assertEquals("", result.carrier)
+    }
+
+    @Test
+    fun `lookup landline with three digit area code`() {
+        val result = attribution.lookupLandline("075512345678")
+        assertNotNull(result)
+        assertEquals("广东", result!!.province)
+        assertEquals("深圳", result.city)
+    }
+
+    @Test
+    fun `lookup unknown landline area code returns null`() {
+        assertNull(attribution.lookupLandline("099912345678"))
+    }
+
+    @Test
+    fun `lookupAny supports both mobile and landline`() {
+        assertEquals("深圳", attribution.lookupAny("13800138000")?.city)
+        assertEquals("上海", attribution.lookupLandline("+862169619151")?.city)
+        assertEquals("上海", attribution.lookupAny("+862169619151")?.city)
+    }
+
+    @Test
+    fun `landline index skips records without area code`() {
+        val malformed = "江苏|南京".toByteArray(Charsets.UTF_8) + byteArrayOf(0)
+        val blank = "浙江|杭州|310000|".toByteArray(Charsets.UTF_8) + byteArrayOf(0)
+        val valid = "北京|北京|100000|010".toByteArray(Charsets.UTF_8) + byteArrayOf(0)
+        val records = malformed + blank + valid
+        val data = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).apply {
+            putInt(1701)
+            putInt(8 + records.size)
+        }.array() + records
+        val attr = PhoneAttribution(data)
+
+        assertNull(attr.lookupLandline("02512345678"))
+        assertNull(attr.lookupLandline("057112345678"))
+        assertEquals("北京", attr.lookupLandline("01012345678")?.city)
     }
 }
