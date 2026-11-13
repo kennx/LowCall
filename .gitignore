@@ -66,3 +66,4 @@ scripts/.venv/
 
 .superpowers.worktrees/
 .superpowers/
+.agents/
