@@ -32,7 +32,7 @@ class MainActivityNavigationTest {
 
         // Click 拦截规则 in bottom nav
         composeTestRule.onNode(
-            hasText(targetContext.getString(R.string.rules_title)) and hasClickAction()
+            hasText(targetContext.getString(R.string.nav_rules)) and hasClickAction()
         ).performClick()
         composeTestRule.waitForIdle()
 
@@ -41,7 +41,7 @@ class MainActivityNavigationTest {
 
         // Click 通话记录 in bottom nav
         composeTestRule.onNode(
-            hasText(targetContext.getString(R.string.history_title)) and hasClickAction()
+            hasText(targetContext.getString(R.string.nav_history)) and hasClickAction()
         ).performClick()
         composeTestRule.waitForIdle()
 
@@ -58,5 +58,31 @@ class MainActivityNavigationTest {
 
         // Assert we returned to Home screen
         composeTestRule.onNodeWithText(targetContext.getString(R.string.home_greeting)).assertExists()
+    }
+
+    @Test
+    fun allFiveDestinationsNavigate() {
+        composeTestRule.setContent {
+            LowCallTheme {
+                LowCallApp(screeningEnabled = true, onSetup = {})
+            }
+        }
+
+        val destinations = listOf(
+            R.string.nav_rules to R.string.rules_title,
+            R.string.nav_history to R.string.history_title,
+            R.string.whitelist_title to R.string.whitelist_title,
+            R.string.settings_title to R.string.settings_title,
+            R.string.home_title to R.string.home_greeting
+        )
+        destinations.forEach { (navigationLabel, screenText) ->
+            composeTestRule.onNode(
+                hasText(targetContext.getString(navigationLabel)) and hasClickAction()
+            ).performClick()
+            composeTestRule.waitForIdle()
+            composeTestRule.onNode(
+                hasText(targetContext.getString(screenText)) and hasNoClickAction()
+            ).assertExists()
+        }
     }
 }

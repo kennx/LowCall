@@ -19,12 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.PlaylistAddCheck
-import androidx.compose.material.icons.filled.Rule
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,13 +30,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -90,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val screeningEnabled by isScreeningEnabled.collectAsState()
+                    val screeningEnabled by isScreeningEnabled.collectAsStateWithLifecycle()
                     LowCallApp(screeningEnabled = screeningEnabled, onSetup = { requestScreeningRole() })
                 }
             }
@@ -139,11 +134,11 @@ fun LowCallApp(screeningEnabled: Boolean, onSetup: () -> Unit) {
     val navController = rememberNavController()
 
     val bottomNavItems = listOf(
-        NavItem(NavRoutes.HOME, R.string.home_title, Icons.Default.Home),
-        NavItem(NavRoutes.RULES, R.string.rules_title, Icons.Default.Rule),
-        NavItem(NavRoutes.HISTORY, R.string.history_title, Icons.Default.History),
-        NavItem(NavRoutes.WHITELIST, R.string.whitelist_title, Icons.Default.PlaylistAddCheck),
-        NavItem(NavRoutes.SETTINGS, R.string.settings_title, Icons.Default.Settings)
+        NavItem(NavRoutes.HOME, R.string.home_title, R.drawable.ic_home_solid),
+        NavItem(NavRoutes.RULES, R.string.nav_rules, R.drawable.ic_rule_solid),
+        NavItem(NavRoutes.HISTORY, R.string.nav_history, R.drawable.ic_history_solid),
+        NavItem(NavRoutes.WHITELIST, R.string.whitelist_title, R.drawable.ic_whitelist_solid),
+        NavItem(NavRoutes.SETTINGS, R.string.settings_title, R.drawable.ic_settings_solid)
     )
 
     Scaffold(
@@ -155,7 +150,12 @@ fun LowCallApp(screeningEnabled: Boolean, onSetup: () -> Unit) {
                 NavigationBar {
                     bottomNavItems.forEach { item ->
                         NavigationBarItem(
-                            icon = { Icon(item.icon, contentDescription = null) },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(item.iconRes),
+                                    contentDescription = null
+                                )
+                            },
                             label = { Text(stringResource(item.labelRes)) },
                             selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
                             onClick = {
@@ -187,7 +187,7 @@ fun LowCallApp(screeningEnabled: Boolean, onSetup: () -> Unit) {
 private data class NavItem(
     val route: String,
     val labelRes: Int,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
+    val iconRes: Int
 )
 
 @Composable

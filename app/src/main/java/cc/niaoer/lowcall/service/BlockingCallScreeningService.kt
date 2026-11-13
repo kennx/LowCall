@@ -31,7 +31,7 @@ class BlockingCallScreeningService : CallScreeningService() {
         val container = (application as LowCallApplication).appContainer
 
         runBlocking {
-            val attribution = container.phoneAttribution.lookup(phoneNumber)
+            val attribution = container.phoneAttribution.lookupAny(phoneNumber)
             val location = attribution?.let { "${it.province}${it.city}" }
             val carrier = attribution?.carrier
 

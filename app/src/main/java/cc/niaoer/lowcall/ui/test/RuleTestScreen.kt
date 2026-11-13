@@ -11,10 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,7 +51,10 @@ fun RuleTestScreen(
                 ),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(cc.niaoer.lowcall.R.string.back))
+                        Icon(
+                            painter = painterResource(R.drawable.ic_back_solid),
+                            contentDescription = stringResource(R.string.back)
+                        )
                     }
                 }
             )
@@ -109,7 +109,9 @@ private fun ResultCard(matchedRule: cc.niaoer.lowcall.data.model.BlockRule?) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    if (isBlocked) Icons.Default.Block else Icons.Default.CheckCircle,
+                    painter = painterResource(
+                        if (isBlocked) R.drawable.ic_blocked_solid else R.drawable.ic_allowed_solid
+                    ),
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
                     tint = if (isBlocked)
@@ -120,7 +122,9 @@ private fun ResultCard(matchedRule: cc.niaoer.lowcall.data.model.BlockRule?) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = if (isBlocked) {
-                        stringResource(R.string.test_matched, matchedRule!!.pattern)
+                        matchedRule?.pattern?.let { pattern ->
+                            stringResource(R.string.test_matched, pattern)
+                        } ?: stringResource(R.string.test_no_match)
                     } else {
                         stringResource(R.string.test_no_match)
                     },

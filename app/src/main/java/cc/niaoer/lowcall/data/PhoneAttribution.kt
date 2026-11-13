@@ -16,6 +16,7 @@ class PhoneAttribution(data: ByteArray) {
         .order(ByteOrder.LITTLE_ENDIAN)
 
     private val indexOffset: Int
+    private val landlineIndex: Map<String, AttributionResult> by lazy { buildLandlineIndex() }
 
     init {
         // skip version (4 bytes), read first index offset (4 bytes)
@@ -58,6 +59,53 @@ class PhoneAttribution(data: ByteArray) {
             }
         }
         return null
+    }
+
+    fun lookupLandline(phoneNumber: String): AttributionResult? {
+        var normalized = normalizePhone(phoneNumber)
+        if (normalized.startsWith("86") && normalized.length > 11) {
+            val national = normalized.removePrefix("86")
+            normalized = if (national.startsWith("0")) national else "0$national"
+        }
+        if (!normalized.startsWith("0")) return null
+
+        val areaCode = listOf(3, 4)
+            .filter { normalized.length > it }
+            .map { normalized.substring(0, it) }
+            .firstOrNull { landlineIndex.containsKey(it) }
+            ?: return null
+        return landlineIndex[areaCode]
+    }
+
+    fun lookupAny(phoneNumber: String): AttributionResult? =
+        lookup(phoneNumber) ?: lookupLandline(phoneNumber)
+
+    private fun buildLandlineIndex(): Map<String, AttributionResult> {
+        val result = mutableMapOf<String, AttributionResult>()
+        val localBuffer = buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN)
+        var offset = 8
+        while (offset < indexOffset) {
+            val start = offset
+            while (offset < indexOffset && localBuffer.get(offset) != 0.toByte()) offset++
+            if (offset >= indexOffset) break
+            val bytes = ByteArray(offset - start)
+            localBuffer.position(start)
+            localBuffer.get(bytes)
+            val record = String(bytes, Charsets.UTF_8)
+            val parts = record.split("|")
+            if (parts.size >= 4 && parts[3].isNotBlank()) {
+                result.putIfAbsent(
+                    parts[3].trim(),
+                    AttributionResult(
+                        province = parts[0],
+                        city = parts[1],
+                        carrier = ""
+                    )
+                )
+            }
+            offset++
+        }
+        return result
     }
 
     private fun readRecord(localBuffer: ByteBuffer, offset: Int): String? {

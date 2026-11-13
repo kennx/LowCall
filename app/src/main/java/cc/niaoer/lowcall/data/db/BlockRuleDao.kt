@@ -20,6 +20,9 @@ interface BlockRuleDao {
     @Query("SELECT * FROM block_rules WHERE id = :id")
     suspend fun getById(id: Long): BlockRule?
 
+    @Query("SELECT * FROM block_rules WHERE pattern = :pattern AND rule_type = 'EXACT' LIMIT 1")
+    suspend fun findExact(pattern: String): BlockRule?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(rule: BlockRule): Long
 
